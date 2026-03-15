@@ -38,25 +38,34 @@ struct CarouselView: View {
         GeometryReader { geo in
             // ── Card dimensions ─────────────────────────────────────────────
             let isRegular  = hSizeClass == .regular          // iPad / Mac
-            // Width fraction of the container width for center card
-            let wFraction: CGFloat = isRegular ? 0.55 : 0.84
+            // Width fraction of the container width for center card.
+            // Regular is wider so the selected card dominates the frame.
+            let wFraction: CGFloat = isRegular ? 0.62 : 0.84
             // Card height: fills allocated height but is capped so cards never
             // become unreasonably tall on large iPad / Mac windows.
             let cardH = min(geo.size.height - 8, isRegular ? 580 : 560)
-            // Card width: fraction of container OR portrait-aspect cap so
-            // cards on very wide/tall screens keep a sensible aspect ratio.
+            // Card width: fraction of container OR aspect cap so cards on very
+            // wide/tall screens keep a sensible ratio.
+            // Regular uses a wider 9:10 ratio so cards are more square/prominent.
             let cardW = min(geo.size.width * wFraction,
-                            cardH * 0.80,                    // max 4:5 portrait ratio
-                            isRegular ? 520 : 400)           // absolute pixel cap
-            let spacing: CGFloat = isRegular ? 32 : 20
+                            cardH * (isRegular ? 0.90 : 0.80),
+                            isRegular ? 540 : 400)
+            // Larger spacing on regular so shrunken adjacent cards don't crowd
+            // the dominant center card.
+            let spacing: CGFloat = isRegular ? 44 : 20
             let step = cardW + spacing
 
             ZStack {
                 ForEach(Array(recipes.enumerated()), id: \.element.id) { i, recipe in
                     let delta     = CGFloat(i - safeIndex) * step + dragOffset
                     let absNorm   = abs(delta) / step
-                    let scale     = max(0.84, 1.0 - absNorm * 0.09)
-                    let rotY      = Double(delta / (cardW * 1.6)) * 13.0
+                    // Regular (iPad/Mac): steeper scale falloff so the selected
+                    // card is noticeably larger than its neighbours.
+                    // Compact (iPhone): subtle falloff to keep the gentle feel.
+                    let scaleShrink: CGFloat = isRegular ? 0.14 : 0.09
+                    let scaleFloor: CGFloat  = isRegular ? 0.70 : 0.84
+                    let scale     = max(scaleFloor, 1.0 - absNorm * scaleShrink)
+                    let rotY      = Double(delta / (cardW * 1.6)) * (isRegular ? 16.0 : 13.0)
                     let opacity   = max(0.42, 1.0 - absNorm * 0.42)
                     let isCurrent = i == safeIndex
 
