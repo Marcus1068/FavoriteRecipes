@@ -1,8 +1,18 @@
 import SwiftUI
+import PhotosUI
 import UIKit
 
-/// Wraps UIImagePickerController for camera capture.
-/// Presented as a SwiftUI sheet; dismisses itself when done or cancelled.
+// MARK: - Public entry point (all platforms)
+
+/// Camera capture view.
+///
+/// On iPhone/iPad the native camera is used via `UIImagePickerController`.
+/// On Mac Catalyst the camera is unavailable, so `CameraPickerView` is never
+/// presented — `RecipeDetailView` already guards the "Take Photo" button with
+/// `#if !targetEnvironment(macCatalyst)`.  This file compiles cleanly on all
+/// platforms by wrapping the UIImagePickerController code in a conditional.
+#if !targetEnvironment(macCatalyst)
+
 struct CameraPickerView: View {
     let onCapture: (Data) -> Void
     @Environment(\.dismiss) private var dismiss
@@ -31,7 +41,9 @@ private struct _CameraController: UIViewControllerRepresentable {
 
     func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
 
-    final class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    final class Coordinator: NSObject,
+                             UIImagePickerControllerDelegate,
+                             UINavigationControllerDelegate {
         let onCapture: (Data) -> Void
         let dismiss: DismissAction
 
@@ -56,3 +68,5 @@ private struct _CameraController: UIViewControllerRepresentable {
         }
     }
 }
+
+#endif // !targetEnvironment(macCatalyst)

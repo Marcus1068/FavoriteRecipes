@@ -33,13 +33,15 @@ struct RecipeDetailView: View {
                         .fontWeight(.semibold)
                 }
             }
-            // Camera sheets
+            // Camera sheets (unavailable on Mac Catalyst)
+#if !targetEnvironment(macCatalyst)
             .sheet(isPresented: $showRecipeCamera) {
                 CameraPickerView { data in recipe.recipeImageData = data }
             }
             .sheet(isPresented: $showIngredientsCamera) {
                 CameraPickerView { data in recipe.ingredientsImageData = data }
             }
+#endif
             // PDF picker
             .sheet(isPresented: $showPDFPicker) {
                 DocumentPicker { data in
