@@ -1,75 +1,61 @@
 #if targetEnvironment(macCatalyst)
 import UIKit
 
-/// Manages window geometry on Mac Catalyst.
+/// Manages window geometry (minimum size, default size, persistence) on Mac Catalyst.
 ///
-/// Strategy
-/// ────────
-/// On Mac Catalyst every `UIWindow` is backed by an `NSWindow`.  AppKit's
-/// `NSWindow.setFrameAutosaveName(_:)` is the canonical macOS mechanism for
-/// frame persistence: it automatically saves the frame to `NSUserDefaults`
-/// whenever the window moves or resizes, and automatically restores it the
-/// next time the same autosave-name is set.  No manual save/restore code is
-/// needed once the name is registered.
-///
-/// We access `NSWindow` via UIKit's KVC bridge (`value(forKey: "nsWindow")`),
-/// which is the standard pattern used by Mac Catalyst apps.  A manual
-/// `requestGeometryUpdate` fallback is provided in case the KVC key changes
-/// in a future SDK.
+/// NSWindow access
+/// ───────────────
+/// Every UIWindow on Mac Catalyst is backed by an NSWindow.  We access it
+/// through a *selector* check rather than `value(forKey:)`.
+/// `value(forKey: "nsWindow")` raises a fatal `NSUndefinedKeyException` if the
+/// KVC key is absent (e.g., in a future SDK), and Swift **cannot** catch
+/// Objective-C exceptions with try/catch.  `responds(to:)` + `perform(_:)` is
+/// always safe: `responds(to:)` never throws and `perform(_:)` is only called
+/// when the selector is confirmed to exist.
 ///
 /// Timing
 /// ──────
 /// `requestGeometryUpdate` must be deferred: SwiftUI performs its own initial
-/// window layout *after* `onAppear` fires, which would silently override an
-/// immediate call.  Waiting 0.5 s (one animation frame cycle) is sufficient
-/// to outlast SwiftUI's setup pass.  NSWindow autosave is set in the same
-/// deferred block so it captures the correct initial frame.
+/// window layout *after* `onAppear`, which would silently override an immediate
+/// call.  1 second is used to safely outlast SwiftUI's setup pass.
 @MainActor
 enum MacWindowManager {
 
     static let minSize     = CGSize(width: 820,  height: 600)
     static let defaultSize = CGSize(width: 1100, height: 780)
 
-    private static let autosaveName  = "FavoriteRecipesMain"
-    private static let nsFrameKey    = "NSWindow Frame \(autosaveName)"  // AppKit's UserDefaults key
-    private static let manualKey     = "mac.windowFrame"                  // fallback key
+    private static let autosaveName = "FavoriteRecipesMain"
+    private static let nsFrameKey  = "NSWindow Frame \(autosaveName)"
+    private static let manualKey   = "mac.windowFrame"
 
     // MARK: - Public API
 
     /// Call once from `ContentView.onAppear`.
     static func configure() {
         guard let scene = windowScene() else { return }
-
-        // Apply minimum-size constraint immediately (no timing dependency).
         scene.sizeRestrictions?.minimumSize = minSize
 
-        // Defer actual geometry work: SwiftUI's own window setup runs after
-        // onAppear, so we must wait for it to finish before we can take over.
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             guard let uiWindow = scene.windows.first else { return }
 
-            if let nsWindow = uiWindow.value(forKey: "nsWindow") as? NSObject {
-                configureNSWindow(nsWindow, scene: scene)
+            if let ns = safeNSWindow(from: uiWindow) {
+                setupNSWindowAutosave(ns, scene: scene)
             } else {
-                // Fallback path — no NSWindow KVC access.
                 configureManually(scene: scene)
             }
         }
     }
 
     /// Call from `onChange(of: scenePhase)` on `.inactive` / `.background`.
-    /// When the NSWindow path is active this is a no-op (AppKit already saved).
-    /// For the manual fallback it writes the frame to UserDefaults.
     static func saveFrame() {
-        guard let scene = windowScene(),
-              let uiWindow = scene.windows.first
-        else { return }
+        guard let scene  = windowScene(),
+              let window = scene.windows.first else { return }
 
-        // If NSWindow autosave is active we do nothing — AppKit handles it.
-        if uiWindow.value(forKey: "nsWindow") is NSObject { return }
+        // If NSWindow autosave is active it already saved — no-op.
+        if safeNSWindow(from: window) != nil { return }
 
-        // Manual fallback: save UIWindow bounds + origin.
-        let f = uiWindow.frame
+        // Manual fallback.
+        let f = window.frame
         guard f.width >= minSize.width, f.height >= minSize.height else { return }
         UserDefaults.standard.set(
             ["x": f.origin.x, "y": f.origin.y, "w": f.width, "h": f.height],
@@ -78,28 +64,41 @@ enum MacWindowManager {
         UserDefaults.standard.synchronize()
     }
 
-    // MARK: - NSWindow path
+    // MARK: - Safe NSWindow access
 
-    private static func configureNSWindow(_ nsWindow: NSObject, scene: UIWindowScene) {
-        let hasAutosave = UserDefaults.standard.string(forKey: nsFrameKey) != nil
+    /// Returns the backing NSWindow using a selector-existence check.
+    /// Never crashes: if the selector doesn't exist in this SDK, returns nil.
+    private static func safeNSWindow(from uiWindow: UIWindow) -> NSObject? {
+        let sel = NSSelectorFromString("nsWindow")
+        guard uiWindow.responds(to: sel) else { return nil }
+        return uiWindow.perform(sel)?.takeUnretainedValue() as? NSObject
+    }
 
-        if !hasAutosave {
-            // First launch — position the window at a sensible default *before*
-            // registering the autosave name, so the default gets persisted too.
+    // MARK: - NSWindow autosave path
+
+    private static func setupNSWindowAutosave(_ ns: NSObject, scene: UIWindowScene) {
+        let hasSaved = UserDefaults.standard.string(forKey: nsFrameKey) != nil
+
+        if !hasSaved {
+            // First launch: position at a good default first, then register
+            // the autosave name so the default gets persisted going forward.
             scene.requestGeometryUpdate(
                 UIWindowScene.GeometryPreferences.Mac(systemFrame: defaultFrame(for: scene)),
                 errorHandler: nil
             )
-            // Wait one more frame so requestGeometryUpdate can apply, then
-            // register the autosave name.
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
-                nsWindow.perform(NSSelectorFromString("setFrameAutosaveName:"), with: autosaveName)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                let regSel = NSSelectorFromString("setFrameAutosaveName:")
+                if ns.responds(to: regSel) {
+                    ns.perform(regSel, with: autosaveName)
+                }
             }
         } else {
-            // Subsequent launch — register the name first (AppKit restores the
-            // saved frame as a side effect), then enforce the minimum size in
-            // case the saved frame is smaller than our current minimum.
-            nsWindow.perform(NSSelectorFromString("setFrameAutosaveName:"), with: autosaveName)
+            // Subsequent launch: registering the autosave name makes AppKit
+            // restore the saved frame as a side-effect.
+            let regSel = NSSelectorFromString("setFrameAutosaveName:")
+            if ns.responds(to: regSel) {
+                ns.perform(regSel, with: autosaveName)
+            }
             enforceMinimumSize(scene: scene)
         }
     }
@@ -121,9 +120,8 @@ enum MacWindowManager {
             let w = d["w"], let h = d["h"],
             w >= minSize.width, h >= minSize.height
         else { return nil }
-        let frame = CGRect(x: x, y: y, width: w, height: h)
-        // Reject frames that are entirely off the current display.
-        return scene.screen.bounds.intersects(frame.insetBy(dx: 80, dy: 80)) ? frame : nil
+        let f = CGRect(x: x, y: y, width: w, height: h)
+        return scene.screen.bounds.intersects(f.insetBy(dx: 80, dy: 80)) ? f : nil
     }
 
     // MARK: - Helpers
@@ -133,25 +131,21 @@ enum MacWindowManager {
         return CGRect(
             x: (s.width  - defaultSize.width)  / 2,
             y: (s.height - defaultSize.height) / 2,
-            width:  defaultSize.width,
-            height: defaultSize.height
+            width: defaultSize.width, height: defaultSize.height
         )
     }
 
     private static func enforceMinimumSize(scene: UIWindowScene) {
-        guard let window = scene.windows.first else { return }
-        let f = window.frame
-        if f.width < minSize.width || f.height < minSize.height {
-            let fixed = CGRect(
+        guard let w = scene.windows.first else { return }
+        let f = w.frame
+        guard f.width < minSize.width || f.height < minSize.height else { return }
+        scene.requestGeometryUpdate(
+            UIWindowScene.GeometryPreferences.Mac(systemFrame: CGRect(
                 x: f.origin.x, y: f.origin.y,
-                width:  max(f.width,  minSize.width),
-                height: max(f.height, minSize.height)
-            )
-            scene.requestGeometryUpdate(
-                UIWindowScene.GeometryPreferences.Mac(systemFrame: fixed),
-                errorHandler: nil
-            )
-        }
+                width: max(f.width, minSize.width), height: max(f.height, minSize.height)
+            )),
+            errorHandler: nil
+        )
     }
 
     private static func windowScene() -> UIWindowScene? {
