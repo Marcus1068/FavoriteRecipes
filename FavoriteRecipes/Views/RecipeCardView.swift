@@ -26,7 +26,6 @@ struct RecipeCardView: View {
     var showContextMenu: Bool = true
 
     @State private var showDetail        = false
-    @State private var isExtracting      = false
     @State private var favoriteAnimating = false
 
     // MARK: - Body
@@ -139,35 +138,22 @@ struct RecipeCardView: View {
             }
 
             HStack(spacing: 10) {
-                // Share — eagerly extracts text (with progress indicator) then
-                // presents the system share sheet via UIKit so the progress is
-                // visible and Mac Catalyst works correctly.
+                // Share — sends the already-extracted ingredients text directly.
+                // OCR / PDF extraction now happens automatically on import so
+                // ingredientsText is always up-to-date (no async work needed here).
                 Button {
-                    guard !isExtracting else { return }
-                    isExtracting = true
-                    Task {
-                        let text = await TextExtractor.extract(from: recipe)
-                        isExtracting = false
-                        presentShareSheet(items: [text])
-                    }
+                    let text = recipe.ingredientsText?.trimmingCharacters(in: .whitespacesAndNewlines)
+                    presentShareSheet(items: [text?.isEmpty == false ? text! : "No ingredients text available."])
                 } label: {
                     HStack(spacing: 5) {
-                        if isExtracting {
-                            ProgressView()
-                                .scaleEffect(0.72)
-                                .tint(.white)
-                        } else {
-                            Image(systemName: "square.and.arrow.up")
-                        }
-                        Text(isExtracting ? "Extracting…" : "Share")
+                        Image(systemName: "square.and.arrow.up")
+                        Text("Share")
                     }
                     .font(.caption.weight(.semibold))
                     .padding(.horizontal, 14)
                     .padding(.vertical, 8)
                     .background(.ultraThinMaterial, in: Capsule())
                     .foregroundStyle(.white)
-                    .opacity(isExtracting ? 0.75 : 1.0)
-                    .animation(.easeInOut(duration: 0.2), value: isExtracting)
                 }
                 .buttonStyle(.plain)
 
