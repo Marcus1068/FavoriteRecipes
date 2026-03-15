@@ -4,6 +4,8 @@ import SwiftData
 @main
 struct FavoriteRecipesApp: App {
 
+    @Environment(\.scenePhase) private var scenePhase
+
     let sharedModelContainer: ModelContainer
 
     init() {
@@ -34,6 +36,16 @@ struct FavoriteRecipesApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+#if targetEnvironment(macCatalyst)
+                .onAppear {
+                    MacWindowManager.configure()
+                }
+                .onChange(of: scenePhase) { _, phase in
+                    if phase == .inactive || phase == .background {
+                        MacWindowManager.saveFrame()
+                    }
+                }
+#endif
         }
         .modelContainer(sharedModelContainer)
     }
