@@ -45,7 +45,7 @@ private struct _CameraController: UIViewControllerRepresentable {
             didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]
         ) {
             let image = info[.editedImage] as? UIImage ?? info[.originalImage] as? UIImage
-            if let image, let data = image.jpegData(compressionQuality: 0.85) {
+            if let image, let data = image.jpegDataFitting() {
                 onCapture(data)
             }
             dismiss()

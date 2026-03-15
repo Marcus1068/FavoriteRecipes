@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 import PhotosUI
 
 struct RecipeDetailView: View {
@@ -49,15 +50,17 @@ struct RecipeDetailView: View {
             // Photo transfers
             .onChange(of: recipePhotoItem) { _, item in
                 Task {
-                    if let data = try? await item?.loadTransferable(type: Data.self) {
-                        recipe.recipeImageData = data
+                    if let raw = try? await item?.loadTransferable(type: Data.self),
+                       let image = UIImage(data: raw) {
+                        recipe.recipeImageData = image.jpegDataFitting()
                     }
                 }
             }
             .onChange(of: ingredientsPhotoItem) { _, item in
                 Task {
-                    if let data = try? await item?.loadTransferable(type: Data.self) {
-                        recipe.ingredientsImageData = data
+                    if let raw = try? await item?.loadTransferable(type: Data.self),
+                       let image = UIImage(data: raw) {
+                        recipe.ingredientsImageData = image.jpegDataFitting()
                     }
                 }
             }

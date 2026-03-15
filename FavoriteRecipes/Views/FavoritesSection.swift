@@ -44,6 +44,8 @@ struct FavoriteRecipeCard: View {
                     Image(uiImage: img)
                         .resizable()
                         .scaledToFill()
+                        .frame(width: 112, height: 112)
+                        .clipped()
                 } else {
                     recipe.category.color.opacity(0.25)
                     Text(recipe.category.icon)

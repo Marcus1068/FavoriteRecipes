@@ -3,6 +3,7 @@ import SwiftData
 
 struct RecipesView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.horizontalSizeClass) private var hSizeClass
     @Query(sort: \Recipe.createdAt, order: .reverse) private var allRecipes: [Recipe]
 
     @State private var selectedCategory: RecipeCategory?
@@ -34,48 +35,52 @@ struct RecipesView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                // Dynamic blurred background
                 dynamicBackground
 
+                // Vertical layout — NO ScrollView.
+                // Every element has a known, bounded height so nothing can push
+                // the Inspire Me button or Share/Edit buttons off screen.
                 VStack(spacing: 0) {
-                    // Category filter chips
+                    // Category filter — fixed height ~50 pt
                     CategoryFilterView(selected: $selectedCategory)
                         .padding(.vertical, 10)
                         .onChange(of: selectedCategory) { _, _ in
                             withAnimation(.spring()) { currentIndex = 0 }
                         }
 
-                    ScrollView(showsIndicators: false) {
-                        VStack(spacing: 28) {
-                            // Favorites section
-                            if !favoriteRecipes.isEmpty {
-                                FavoritesSection(recipes: favoriteRecipes)
-                                    .transition(.move(edge: .top).combined(with: .opacity))
-                            }
-
-                            if regularRecipes.isEmpty {
-                                EmptyCarouselView(onAdd: addNewRecipe)
-                                    .padding(.top, 40)
-                            } else {
-                                // Main carousel
-                                CarouselView(recipes: regularRecipes, currentIndex: $currentIndex)
-                                    .frame(height: 440)
-                                    .padding(.top, 4)
-
-                                // Page indicators
-                                PageIndicatorView(count: regularRecipes.count, current: currentIndex)
-
-                                // Inspire Me button
-                                InspireMeButton(recipes: regularRecipes, currentIndex: $currentIndex)
-                                    .padding(.top, 6)
-                            }
+                    if regularRecipes.isEmpty {
+                        Spacer()
+                        EmptyCarouselView(onAdd: addNewRecipe)
+                        Spacer()
+                    } else {
+                        // Favorites strip — fixed ~150 pt, horizontal scroll inside
+                        if !favoriteRecipes.isEmpty {
+                            FavoritesSection(recipes: favoriteRecipes)
+                                .transition(.move(edge: .top).combined(with: .opacity))
                         }
-                        .padding(.bottom, 32)
+
+                        // ── Carousel ─────────────────────────────────────────
+                        // frame(maxHeight: .infinity) gives the carousel ALL
+                        // remaining vertical space after every fixed element has
+                        // taken its share. CarouselView reads geo.size.height to
+                        // compute card dimensions, so every card always fits.
+                        CarouselView(recipes: regularRecipes, currentIndex: $currentIndex)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .frame(minHeight: 200)     // safety floor on tiny screens
+                        // ─────────────────────────────────────────────────────
+
+                        // Page dots — always below the carousel
+                        PageIndicatorView(count: regularRecipes.count, current: currentIndex)
+                            .padding(.vertical, 6)
+
+                        // Inspire Me — always visible
+                        InspireMeButton(recipes: regularRecipes, currentIndex: $currentIndex)
+                            .padding(.bottom, 20)
                     }
                 }
             }
             .navigationTitle("My Recipes")
-            .navigationBarTitleDisplayMode(.large)
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button(action: addNewRecipe) {
