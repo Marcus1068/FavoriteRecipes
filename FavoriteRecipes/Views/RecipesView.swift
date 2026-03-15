@@ -9,6 +9,7 @@ struct RecipesView: View {
     @State private var selectedCategory: RecipeCategory?
     @State private var currentIndex: Int = 0
     @State private var newRecipe: Recipe?
+    @FocusState private var carouselFocused: Bool
 
     // MARK: - Filtered lists
 
@@ -68,6 +69,22 @@ struct RecipesView: View {
                     CarouselView(recipes: regularRecipes, currentIndex: $currentIndex)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .frame(minHeight: 220)     // safety floor on tiny screens
+                        .focused($carouselFocused)
+                        .onKeyPress(.leftArrow) {
+                            guard currentIndex > 0 else { return .ignored }
+                            withAnimation(.spring(response: 0.42, dampingFraction: 0.82)) {
+                                currentIndex -= 1
+                            }
+                            return .handled
+                        }
+                        .onKeyPress(.rightArrow) {
+                            guard currentIndex < regularRecipes.count - 1 else { return .ignored }
+                            withAnimation(.spring(response: 0.42, dampingFraction: 0.82)) {
+                                currentIndex += 1
+                            }
+                            return .handled
+                        }
+                        .onAppear { carouselFocused = true }
                     // ─────────────────────────────────────────────────────────
 
                     // Page dots — always below the carousel
