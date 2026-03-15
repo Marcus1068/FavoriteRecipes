@@ -65,38 +65,26 @@ struct RecipesView: View {
                     CarouselView(recipes: regularRecipes, currentIndex: $currentIndex)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .frame(minHeight: 220)
-                    // ─────────────────────────────────────────────────────────
-
-                    // ── Arrow-key navigation (Mac Catalyst + iPad keyboard) ──
-                    // onKeyPress requires UIKit first-responder focus, which
-                    // GeometryReader can't hold. keyboardShortcut creates a
-                    // UIKeyCommand processed by the responder chain — no focus
-                    // required. Buttons are zero-sized and invisible (opacity:0)
-                    // so they don't affect layout or accessibility.
-                    // Text fields consume arrow keys first, so navigation only
-                    // fires when no text field is active.
-                    if regularRecipes.count > 1 {
-                        HStack(spacing: 0) {
-                            Button("Previous") {
-                                guard currentIndex > 0 else { return }
-                                withAnimation(.spring(response: 0.42, dampingFraction: 0.82)) {
-                                    currentIndex -= 1
+                        // Arrow-key navigation via UIKit pressesBegan.
+                        // See KeyboardNavigationHandler.swift for the rationale
+                        // behind this approach vs onKeyPress / keyboardShortcut.
+                        .overlay(
+                            KeyboardNavigationHandler(
+                                onLeft: {
+                                    guard currentIndex > 0 else { return }
+                                    withAnimation(.spring(response: 0.42, dampingFraction: 0.82)) {
+                                        currentIndex -= 1
+                                    }
+                                },
+                                onRight: {
+                                    guard currentIndex < regularRecipes.count - 1 else { return }
+                                    withAnimation(.spring(response: 0.42, dampingFraction: 0.82)) {
+                                        currentIndex += 1
+                                    }
                                 }
-                            }
-                            .keyboardShortcut(.leftArrow, modifiers: [])
-
-                            Button("Next") {
-                                guard currentIndex < regularRecipes.count - 1 else { return }
-                                withAnimation(.spring(response: 0.42, dampingFraction: 0.82)) {
-                                    currentIndex += 1
-                                }
-                            }
-                            .keyboardShortcut(.rightArrow, modifiers: [])
-                        }
-                        .opacity(0)
-                        .frame(width: 0, height: 0)
-                        .accessibilityHidden(true)
-                    }
+                            )
+                            .accessibilityHidden(true)
+                        )
                     // ─────────────────────────────────────────────────────────
 
                     // Page dots — always below the carousel
