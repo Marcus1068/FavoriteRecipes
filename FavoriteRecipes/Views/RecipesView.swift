@@ -34,51 +34,52 @@ struct RecipesView: View {
 
     var body: some View {
         NavigationStack {
-            ZStack {
-                dynamicBackground
-
-                // Vertical layout — NO ScrollView.
-                // Every element has a known, bounded height so nothing can push
-                // the Inspire Me button or Share/Edit buttons off screen.
-                VStack(spacing: 0) {
-                    // Category filter — fixed height ~50 pt
-                    CategoryFilterView(selected: $selectedCategory)
-                        .padding(.vertical, 10)
-                        .onChange(of: selectedCategory) { _, _ in
-                            withAnimation(.spring()) { currentIndex = 0 }
-                        }
-
-                    if regularRecipes.isEmpty {
-                        Spacer()
-                        EmptyCarouselView(onAdd: addNewRecipe)
-                        Spacer()
-                    } else {
-                        // Favorites strip — fixed ~150 pt, horizontal scroll inside
-                        if !favoriteRecipes.isEmpty {
-                            FavoritesSection(recipes: favoriteRecipes)
-                                .transition(.move(edge: .top).combined(with: .opacity))
-                        }
-
-                        // ── Carousel ─────────────────────────────────────────
-                        // frame(maxHeight: .infinity) gives the carousel ALL
-                        // remaining vertical space after every fixed element has
-                        // taken its share. CarouselView reads geo.size.height to
-                        // compute card dimensions, so every card always fits.
-                        CarouselView(recipes: regularRecipes, currentIndex: $currentIndex)
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            .frame(minHeight: 200)     // safety floor on tiny screens
-                        // ─────────────────────────────────────────────────────
-
-                        // Page dots — always below the carousel
-                        PageIndicatorView(count: regularRecipes.count, current: currentIndex)
-                            .padding(.vertical, 6)
-
-                        // Inspire Me — always visible
-                        InspireMeButton(recipes: regularRecipes, currentIndex: $currentIndex)
-                            .padding(.bottom, 20)
+            // ── Layout root is VStack + .background, NOT ZStack ──────────────
+            // Using ZStack as the root caused SwiftUI to propose the full
+            // window height to all children; the carousel's maxHeight:.infinity
+            // then absorbed more space than intended on iPad/Mac, pushing the
+            // Inspire Me button and page dots out of the visible area.
+            // .background{} keeps the dynamic image purely decorative —
+            // it does not participate in layout — and the VStack receives the
+            // exact safe-area–bounded content height from NavigationStack.
+            VStack(spacing: 0) {
+                // Category filter — fixed height ~50 pt
+                CategoryFilterView(selected: $selectedCategory)
+                    .padding(.vertical, 10)
+                    .onChange(of: selectedCategory) { _, _ in
+                        withAnimation(.spring()) { currentIndex = 0 }
                     }
+
+                if regularRecipes.isEmpty {
+                    Spacer()
+                    EmptyCarouselView(onAdd: addNewRecipe)
+                    Spacer()
+                } else {
+                    // Favorites strip — fixed ~150 pt, horizontal scroll inside
+                    if !favoriteRecipes.isEmpty {
+                        FavoritesSection(recipes: favoriteRecipes)
+                            .transition(.move(edge: .top).combined(with: .opacity))
+                    }
+
+                    // ── Carousel ─────────────────────────────────────────────
+                    // maxHeight:.infinity gives the carousel all remaining space
+                    // after fixed siblings. CarouselView reads geo.size.height
+                    // to derive card dimensions, so cards always fit the slot.
+                    CarouselView(recipes: regularRecipes, currentIndex: $currentIndex)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .frame(minHeight: 220)     // safety floor on tiny screens
+                    // ─────────────────────────────────────────────────────────
+
+                    // Page dots — always below the carousel
+                    PageIndicatorView(count: regularRecipes.count, current: currentIndex)
+                        .padding(.vertical, 6)
+
+                    // Inspire Me — always visible at the bottom
+                    InspireMeButton(recipes: regularRecipes, currentIndex: $currentIndex)
+                        .padding(.bottom, 20)
                 }
             }
+            .background { dynamicBackground }
             .navigationTitle("My Recipes")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

@@ -40,10 +40,11 @@ struct CarouselView: View {
             let isRegular  = hSizeClass == .regular          // iPad / Mac
             // Width fraction of the container width for center card
             let wFraction: CGFloat = isRegular ? 0.55 : 0.84
-            // Card height fills the allocated carousel height (minus 8 pt margin)
-            let cardH = geo.size.height - 8
-            // Card width: use fraction of container OR a portrait-aspect cap so
-            // cards on very wide/tall screens don't become unnaturally narrow.
+            // Card height: fills allocated height but is capped so cards never
+            // become unreasonably tall on large iPad / Mac windows.
+            let cardH = min(geo.size.height - 8, isRegular ? 580 : 560)
+            // Card width: fraction of container OR portrait-aspect cap so
+            // cards on very wide/tall screens keep a sensible aspect ratio.
             let cardW = min(geo.size.width * wFraction,
                             cardH * 0.80,                    // max 4:5 portrait ratio
                             isRegular ? 520 : 400)           // absolute pixel cap
