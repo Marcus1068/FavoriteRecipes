@@ -5,14 +5,30 @@ import UIKit
 
 enum TextExtractor {
 
+    // Called from SwiftUI views that hold a Recipe @Model reference.
     static func extract(from recipe: Recipe) async -> String {
-        switch recipe.ingredientsType {
+        await extract(
+            type:       recipe.ingredientsType,
+            text:       recipe.ingredientsText,
+            imageData:  recipe.ingredientsImageData,
+            pdfData:    recipe.ingredientsPDFData
+        )
+    }
+
+    // Called from Transferable types that work with plain value copies.
+    static func extract(
+        type:      IngredientsType,
+        text:      String?,
+        imageData: Data?,
+        pdfData:   Data?
+    ) async -> String {
+        switch type {
         case .text:
-            let text = recipe.ingredientsText ?? ""
-            return text.isEmpty ? "No ingredients text entered." : text
+            let t = text ?? ""
+            return t.isEmpty ? "No ingredients text entered." : t
 
         case .photo:
-            guard let data = recipe.ingredientsImageData,
+            guard let data = imageData,
                   let image = UIImage(data: data),
                   let cgImage = image.cgImage else {
                 return "No ingredients photo available."
@@ -21,7 +37,7 @@ enum TextExtractor {
             return recognized.isEmpty ? "No text could be recognized in the photo." : recognized
 
         case .pdf:
-            guard let data = recipe.ingredientsPDFData,
+            guard let data = pdfData,
                   let document = PDFDocument(data: data) else {
                 return "No PDF available."
             }

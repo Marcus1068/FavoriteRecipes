@@ -26,8 +26,6 @@ struct RecipeCardView: View {
     var showContextMenu: Bool = true
 
     @State private var showDetail        = false
-    @State private var shareItem: ShareItem?
-    @State private var isExtracting      = false
     @State private var favoriteAnimating = false
 
     // MARK: - Body
@@ -59,7 +57,6 @@ struct RecipeCardView: View {
             }
         }
         .sheet(isPresented: $showDetail) { RecipeDetailView(recipe: recipe) }
-        .sheet(item: $shareItem) { item in ShareSheet(items: [item.text]) }
     }
 
     // MARK: - Photo layer
@@ -141,25 +138,19 @@ struct RecipeCardView: View {
             }
 
             HStack(spacing: 10) {
-                // Share
-                Button {
-                    guard !isExtracting else { return }
-                    isExtracting = true
-                    Task {
-                        let text = await TextExtractor.extract(from: recipe)
-                        await MainActor.run {
-                            isExtracting = false
-                            shareItem = ShareItem(text: text)
-                        }
-                    }
-                } label: {
+                // Share — ShareLink works natively on iOS, iPadOS and Mac Catalyst.
+                // The async text extraction (OCR / PDF) happens inside the
+                // Transferable export closure, lazily at share time.
+                ShareLink(
+                    item: RecipeIngredients(from: recipe),
+                    preview: SharePreview(
+                        recipe.name.isEmpty ? "Recipe" : recipe.name,
+                        icon: Image(systemName: "fork.knife")
+                    )
+                ) {
                     HStack(spacing: 5) {
-                        if isExtracting {
-                            ProgressView().scaleEffect(0.7).tint(.white)
-                        } else {
-                            Image(systemName: "square.and.arrow.up")
-                        }
-                        Text(isExtracting ? "Extracting…" : "Share")
+                        Image(systemName: "square.and.arrow.up")
+                        Text("Share")
                     }
                     .font(.caption.weight(.semibold))
                     .padding(.horizontal, 14)
@@ -216,11 +207,6 @@ private extension View {
 }
 
 // MARK: - Share Item
-
-struct ShareItem: Identifiable {
-    let id = UUID()
-    let text: String
-}
 
 // MARK: - Previews
 
