@@ -7,6 +7,8 @@ enum RecipeCategory: String, Codable, CaseIterable, Identifiable {
     case fish        = "Fish"
     case vegetarian  = "Vegetarian"
     case vegan       = "Vegan"
+    case cake        = "Cake"
+    case cookies     = "Cookies"
 
     var id: Self { self }
 
@@ -17,6 +19,8 @@ enum RecipeCategory: String, Codable, CaseIterable, Identifiable {
         case .fish:        "🐟"
         case .vegetarian:  "🥗"
         case .vegan:       "🌱"
+        case .cake:        "🎂"
+        case .cookies:     "🍪"
         }
     }
 
@@ -27,6 +31,8 @@ enum RecipeCategory: String, Codable, CaseIterable, Identifiable {
         case .fish:        .blue
         case .vegetarian:  .green
         case .vegan:       .mint
+        case .cake:        .pink
+        case .cookies:     Color(red: 0.72, green: 0.45, blue: 0.20)
         }
     }
 }
