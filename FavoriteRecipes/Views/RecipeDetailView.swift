@@ -12,9 +12,12 @@ struct RecipeDetailView: View {
     @State private var ingredientsPhotoItem: PhotosPickerItem?
 
     // Sheet control
-    @State private var showRecipeCamera = false
+    @State private var showRecipeCamera      = false
     @State private var showIngredientsCamera = false
-    @State private var showPDFPicker = false
+    @State private var showPDFPicker         = false
+
+    // Vision extraction state
+    @State private var isExtractingIngredients = false
 
     var body: some View {
         NavigationStack {
@@ -39,7 +42,10 @@ struct RecipeDetailView: View {
                 CameraPickerView { data in recipe.recipeImageData = data }
             }
             .sheet(isPresented: $showIngredientsCamera) {
-                CameraPickerView { data in recipe.ingredientsImageData = data }
+                CameraPickerView { data in
+                    recipe.ingredientsImageData = data
+                    extractAndStoreText(imageData: data)
+                }
             }
 #endif
             // PDF picker
@@ -47,6 +53,7 @@ struct RecipeDetailView: View {
                 DocumentPicker { data in
                     recipe.ingredientsPDFData = data
                     showPDFPicker = false
+                    extractAndStoreText(pdfData: data)
                 }
             }
             // Photo transfers
@@ -60,12 +67,35 @@ struct RecipeDetailView: View {
             }
             .onChange(of: ingredientsPhotoItem) { _, item in
                 Task {
-                    if let raw = try? await item?.loadTransferable(type: Data.self),
+                    if let raw  = try? await item?.loadTransferable(type: Data.self),
                        let image = UIImage(data: raw) {
-                        recipe.ingredientsImageData = image.jpegDataFitting()
+                        let data = image.jpegDataFitting()
+                        recipe.ingredientsImageData = data
+                        extractAndStoreText(imageData: data)
                     }
                 }
             }
+        }
+    }
+
+    // MARK: - Vision extraction
+
+    /// Runs OCR or PDF text extraction in the background, then writes the
+    /// result into `recipe.ingredientsText` and switches the type to `.text`
+    /// so the user can immediately see and edit the extracted content.
+    private func extractAndStoreText(imageData: Data? = nil, pdfData: Data? = nil) {
+        isExtractingIngredients = true
+        Task {
+            let type: IngredientsType = imageData != nil ? .photo : .pdf
+            let text = await TextExtractor.extract(
+                type:      type,
+                text:      nil,
+                imageData: imageData,
+                pdfData:   pdfData
+            )
+            recipe.ingredientsText = text
+            recipe.ingredientsType = .text     // switch to text tab to show result
+            isExtractingIngredients = false
         }
     }
 
@@ -135,6 +165,17 @@ struct RecipeDetailView: View {
                 }
             }
             .pickerStyle(.segmented)
+
+            // Extraction progress banner
+            if isExtractingIngredients {
+                HStack(spacing: 10) {
+                    ProgressView()
+                    Text("Extracting text with Vision…")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+                .padding(.vertical, 4)
+            }
 
             switch recipe.ingredientsType {
             case .photo:  ingredientsPhotoContent
