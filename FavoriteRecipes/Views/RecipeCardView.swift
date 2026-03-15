@@ -26,6 +26,7 @@ struct RecipeCardView: View {
     var showContextMenu: Bool = true
 
     @State private var showDetail        = false
+    @State private var isExtracting      = false
     @State private var favoriteAnimating = false
 
     // MARK: - Body
@@ -138,25 +139,35 @@ struct RecipeCardView: View {
             }
 
             HStack(spacing: 10) {
-                // Share — ShareLink works natively on iOS, iPadOS and Mac Catalyst.
-                // The async text extraction (OCR / PDF) happens inside the
-                // Transferable export closure, lazily at share time.
-                ShareLink(
-                    item: RecipeIngredients(from: recipe),
-                    preview: SharePreview(
-                        recipe.name.isEmpty ? "Recipe" : recipe.name,
-                        icon: Image(systemName: "fork.knife")
-                    )
-                ) {
+                // Share — eagerly extracts text (with progress indicator) then
+                // presents the system share sheet via UIKit so the progress is
+                // visible and Mac Catalyst works correctly.
+                Button {
+                    guard !isExtracting else { return }
+                    isExtracting = true
+                    Task {
+                        let text = await TextExtractor.extract(from: recipe)
+                        isExtracting = false
+                        presentShareSheet(items: [text])
+                    }
+                } label: {
                     HStack(spacing: 5) {
-                        Image(systemName: "square.and.arrow.up")
-                        Text("Share")
+                        if isExtracting {
+                            ProgressView()
+                                .scaleEffect(0.72)
+                                .tint(.white)
+                        } else {
+                            Image(systemName: "square.and.arrow.up")
+                        }
+                        Text(isExtracting ? "Extracting…" : "Share")
                     }
                     .font(.caption.weight(.semibold))
                     .padding(.horizontal, 14)
                     .padding(.vertical, 8)
                     .background(.ultraThinMaterial, in: Capsule())
                     .foregroundStyle(.white)
+                    .opacity(isExtracting ? 0.75 : 1.0)
+                    .animation(.easeInOut(duration: 0.2), value: isExtracting)
                 }
                 .buttonStyle(.plain)
 
