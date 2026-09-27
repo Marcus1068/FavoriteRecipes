@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXFileReference section */
+		2CE424B53069A69600D3D8C6 /* FavoriteRecipesTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FavoriteRecipesTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2CF4453B2F65AA5D009DE620 /* FavoriteRecipes.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FavoriteRecipes.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -21,6 +22,11 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		2CE424B63069A69600D3D8C6 /* FavoriteRecipesTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = FavoriteRecipesTests;
+			sourceTree = "<group>";
+		};
 		2CF4453D2F65AA5D009DE620 /* FavoriteRecipes */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -32,6 +38,13 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		2CE424B23069A69600D3D8C6 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		2CF445382F65AA5D009DE620 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -46,6 +59,7 @@
 			isa = PBXGroup;
 			children = (
 				2CF4453D2F65AA5D009DE620 /* FavoriteRecipes */,
+				2CE424B63069A69600D3D8C6 /* FavoriteRecipesTests */,
 				2CF4453C2F65AA5D009DE620 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -54,6 +68,7 @@
 			isa = PBXGroup;
 			children = (
 				2CF4453B2F65AA5D009DE620 /* FavoriteRecipes.app */,
+				2CE424B53069A69600D3D8C6 /* FavoriteRecipesTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -61,6 +76,28 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		2CE424B43069A69600D3D8C6 /* FavoriteRecipesTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2CE424B93069A69600D3D8C6 /* Build configuration list for PBXNativeTarget "FavoriteRecipesTests" */;
+			buildPhases = (
+				2CE424B13069A69600D3D8C6 /* Sources */,
+				2CE424B23069A69600D3D8C6 /* Frameworks */,
+				2CE424B33069A69600D3D8C6 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				2CE424B63069A69600D3D8C6 /* FavoriteRecipesTests */,
+			);
+			name = FavoriteRecipesTests;
+			packageProductDependencies = (
+			);
+			productName = FavoriteRecipesTests;
+			productReference = 2CE424B53069A69600D3D8C6 /* FavoriteRecipesTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		2CF4453A2F65AA5D009DE620 /* FavoriteRecipes */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 2CF445492F65AA5E009DE620 /* Build configuration list for PBXNativeTarget "FavoriteRecipes" */;
@@ -90,9 +127,12 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 2630;
+				LastSwiftUpdateCheck = 2700;
 				LastUpgradeCheck = 2700;
 				TargetAttributes = {
+					2CE424B43069A69600D3D8C6 = {
+						CreatedOnToolsVersion = 27.0;
+					};
 					2CF4453A2F65AA5D009DE620 = {
 						CreatedOnToolsVersion = 26.3;
 					};
@@ -114,11 +154,19 @@
 			projectRoot = "";
 			targets = (
 				2CF4453A2F65AA5D009DE620 /* FavoriteRecipes */,
+				2CE424B43069A69600D3D8C6 /* FavoriteRecipesTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		2CE424B33069A69600D3D8C6 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		2CF445392F65AA5D009DE620 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -129,6 +177,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		2CE424B13069A69600D3D8C6 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		2CF445372F65AA5D009DE620 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -139,6 +194,60 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		2CE424BA3069A69600D3D8C6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				MACOSX_DEPLOYMENT_TARGET = 27.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "de.marcus-deuss.FavoriteRecipesTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FavoriteRecipes.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/FavoriteRecipes";
+				XROS_DEPLOYMENT_TARGET = 27.0;
+			};
+			name = Debug;
+		};
+		2CE424BB3069A69600D3D8C6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				MACOSX_DEPLOYMENT_TARGET = 27.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "de.marcus-deuss.FavoriteRecipesTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FavoriteRecipes.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/FavoriteRecipes";
+				XROS_DEPLOYMENT_TARGET = 27.0;
+			};
+			name = Release;
+		};
 		2CF4454A2F65AA5E009DE620 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -339,6 +448,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		2CE424B93069A69600D3D8C6 /* Build configuration list for PBXNativeTarget "FavoriteRecipesTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2CE424BA3069A69600D3D8C6 /* Debug */,
+				2CE424BB3069A69600D3D8C6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		2CF445362F65AA5D009DE620 /* Build configuration list for PBXProject "FavoriteRecipes" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
