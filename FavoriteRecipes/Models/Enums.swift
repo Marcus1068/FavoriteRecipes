@@ -14,6 +14,21 @@ enum RecipeCategory: String, Codable, CaseIterable, Identifiable {
 
     var id: Self { self }
 
+    /// Localized display name. `rawValue` is persisted and must not change.
+    var localizedName: LocalizedStringResource {
+        switch self {
+        case .meat:        .categoryMeat
+        case .noodles:     .categoryNoodles
+        case .fish:        .categoryFish
+        case .vegetarian:  .categoryVegetarian
+        case .vegan:       .categoryVegan
+        case .cake:        .categoryCake
+        case .cookies:     .categoryCookies
+        case .soup:        .categorySoup
+        case .drinks:      .categoryDrinks
+        }
+    }
+
     var icon: String {
         switch self {
         case .meat:        "🥩"
@@ -47,6 +62,15 @@ enum IngredientsType: String, Codable, CaseIterable {
     case photo = "Photo"
     case pdf   = "PDF"
     case text  = "Text"
+
+    /// Localized display name. `rawValue` is persisted and must not change.
+    var localizedName: LocalizedStringResource {
+        switch self {
+        case .photo: .ingredientsTypePhoto
+        case .pdf:   .ingredientsTypePDF
+        case .text:  .ingredientsTypeText
+        }
+    }
 
     var icon: String {
         switch self {

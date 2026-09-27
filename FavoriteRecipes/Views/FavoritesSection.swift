@@ -8,7 +8,7 @@ struct FavoritesSection: View {
             HStack(spacing: 6) {
                 Image(systemName: "heart.fill")
                     .foregroundStyle(.red)
-                Text("Favorites")
+                Text(.favorites)
                     .font(.title3.bold())
                 Spacer()
                 Text("\(recipes.count)")
@@ -63,12 +63,12 @@ struct FavoriteRecipeCard: View {
                     .padding(5)
             }
 
-            Text(recipe.name.isEmpty ? "Untitled" : recipe.name)
+            Text(recipe.name.isEmpty ? String(localized: .untitled) : recipe.name)
                 .font(.caption.weight(.semibold))
                 .lineLimit(1)
                 .frame(width: 112, alignment: .leading)
 
-            Text(recipe.category.rawValue)
+            Text(recipe.category.localizedName)
                 .font(.caption2)
                 .foregroundStyle(recipe.category.color)
                 .frame(width: 112, alignment: .leading)
@@ -78,10 +78,10 @@ struct FavoriteRecipeCard: View {
             Button {
                 withAnimation(.spring()) { recipe.isFavorite = false }
             } label: {
-                Label("Remove from Favorites", systemImage: "heart.slash")
+                Label(.removeFromFavorites, systemImage: "heart.slash")
             }
             Button { showDetail = true } label: {
-                Label("Edit Recipe", systemImage: "pencil")
+                Label(.editRecipe, systemImage: "pencil")
             }
         }
         .sheet(isPresented: $showDetail) {

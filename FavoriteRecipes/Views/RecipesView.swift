@@ -97,14 +97,12 @@ struct RecipesView: View {
                 }
             }
             .background { dynamicBackground }
-            .navigationTitle("My Recipes")
+            .navigationTitle(.myRecipes)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
-                    Button(action: addNewRecipe) {
-                        Image(systemName: "plus.circle.fill")
-                            .font(.title3)
-                    }
+                    Button(.addRecipe, systemImage: "plus.circle.fill", action: addNewRecipe)
+                        .font(.title3)
                 }
             }
             .sheet(item: $newRecipe) { recipe in
@@ -154,11 +152,11 @@ struct CategoryFilterView: View {
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 10) {
-                FilterChip(title: "All", icon: "🍽️", color: .accentColor, isSelected: selected == nil) {
+                FilterChip(title: .all, icon: "🍽️", color: .accentColor, isSelected: selected == nil) {
                     withAnimation(.spring(response: 0.3)) { selected = nil }
                 }
                 ForEach(RecipeCategory.allCases) { cat in
-                    FilterChip(title: cat.rawValue, icon: cat.icon, color: cat.color, isSelected: selected == cat) {
+                    FilterChip(title: cat.localizedName, icon: cat.icon, color: cat.color, isSelected: selected == cat) {
                         withAnimation(.spring(response: 0.3)) {
                             selected = (selected == cat) ? nil : cat
                         }
@@ -171,7 +169,7 @@ struct CategoryFilterView: View {
 }
 
 struct FilterChip: View {
-    let title: String
+    let title: LocalizedStringResource
     let icon: String
     let color: Color
     let isSelected: Bool
@@ -202,7 +200,7 @@ struct PageIndicatorView: View {
     var body: some View {
         Group {
             if count > 11 {
-                Text("\(current + 1) of \(count)")
+                Text(.pageIndicator(current + 1, count))
                     .font(.caption)
                     .foregroundStyle(.secondary)
             } else if count > 1 {
@@ -243,7 +241,7 @@ struct InspireMeButton: View {
                     .font(.headline)
                     .rotationEffect(.degrees(isSpinning ? 360 : 0))
                     .animation(isSpinning ? .linear(duration: 0.65) : .default, value: isSpinning)
-                Text("Inspire Me")
+                Text(.inspireMe)
                     .font(.headline)
             }
             .padding(.horizontal, 28)
@@ -280,16 +278,16 @@ struct EmptyCarouselView: View {
                 .font(.system(size: 76))
                 .foregroundStyle(.secondary.opacity(0.45))
 
-            Text("No Recipes Yet")
+            Text(.noRecipesYet)
                 .font(.title2.bold())
 
-            Text("Add your first recipe to get started")
+            Text(.noRecipesYetMessage)
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
 
             Button(action: onAdd) {
-                Label("Add Recipe", systemImage: "plus")
+                Label(.addRecipe, systemImage: "plus")
                     .padding(.horizontal, 24)
                     .padding(.vertical, 12)
                     .background(Color.accentColor, in: Capsule())

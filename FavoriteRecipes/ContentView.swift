@@ -5,17 +5,17 @@ struct ContentView: View {
         TabView {
             RecipesView()
                 .tabItem {
-                    Label("Recipes", systemImage: "fork.knife")
+                    Label(.recipes, systemImage: "fork.knife")
                 }
 
             OptionsView()
                 .tabItem {
-                    Label("Options", systemImage: "gear")
+                    Label(.options, systemImage: "gear")
                 }
 
             AboutView()
                 .tabItem {
-                    Label("About", systemImage: "info.circle")
+                    Label(.about, systemImage: "info.circle")
                 }
         }
     }

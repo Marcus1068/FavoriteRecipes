@@ -43,16 +43,16 @@ struct RecipeCardView: View {
             view.contextMenu {
                 Button { toggleFavorite() } label: {
                     Label(
-                        recipe.isFavorite ? "Remove from Favorites" : "Add to Favorites",
+                        recipe.isFavorite ? .removeFromFavorites : .addToFavorites,
                         systemImage: recipe.isFavorite ? "heart.slash" : "heart"
                     )
                 }
                 Button { showDetail = true } label: {
-                    Label("Edit Recipe", systemImage: "pencil")
+                    Label(.editRecipe, systemImage: "pencil")
                 }
                 Divider()
                 Button(role: .destructive) { modelContext.delete(recipe) } label: {
-                    Label("Delete Recipe", systemImage: "trash")
+                    Label(.deleteRecipe, systemImage: "trash")
                 }
             }
         }
@@ -124,10 +124,10 @@ struct RecipeCardView: View {
         VStack(alignment: .leading, spacing: 6) {
             HStack(alignment: .bottom) {
                 VStack(alignment: .leading, spacing: 3) {
-                    Label(recipe.category.rawValue, systemImage: "tag.fill")
+                    Label(recipe.category.localizedName, systemImage: "tag.fill")
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(.white.opacity(0.85))
-                    Text(recipe.name.isEmpty ? "Untitled Recipe" : recipe.name)
+                    Text(recipe.name.isEmpty ? String(localized: .untitledRecipe) : recipe.name)
                         .font(.title3.bold())
                         .foregroundStyle(.white)
                         .lineLimit(2)
@@ -143,11 +143,11 @@ struct RecipeCardView: View {
                 // ingredientsText is always up-to-date (no async work needed here).
                 Button {
                     let text = recipe.ingredientsText?.trimmingCharacters(in: .whitespacesAndNewlines)
-                    presentShareSheet(items: [text?.isEmpty == false ? text! : "No ingredients text available."])
+                    presentShareSheet(items: [text?.isEmpty == false ? text! : String(localized: .noIngredientsTextAvailable)])
                 } label: {
                     HStack(spacing: 5) {
                         Image(systemName: "square.and.arrow.up")
-                        Text("Share")
+                        Text(.share)
                     }
                     .font(.caption.weight(.semibold))
                     .padding(.horizontal, 14)

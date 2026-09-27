@@ -18,74 +18,74 @@ struct OptionsView: View {
                     Button {
                         showConfirmGenerate = true
                     } label: {
-                        Label("Generate Sample Recipes", systemImage: "wand.and.stars")
+                        Label(.generateSampleRecipes, systemImage: "wand.and.stars")
                     }
                     .confirmationDialog(
-                        "Generate 12 sample recipes?",
+                        Text(.generateSampleRecipesConfirmTitle),
                         isPresented: $showConfirmGenerate,
                         titleVisibility: .visible
                     ) {
-                        Button("Generate") {
+                        Button(.generate) {
                             SampleDataGenerator.generate(in: modelContext)
                             generationDone = true
                         }
-                        Button("Cancel", role: .cancel) {}
+                        Button(.cancel, role: .cancel) {}
                     } message: {
-                        Text("Existing recipes with the same name are skipped. You can edit or delete them afterwards.")
+                        Text(.generateSampleRecipesConfirmMessage)
                     }
 
                     // Delete all
                     Button(role: .destructive) {
                         showConfirmDelete = true
                     } label: {
-                        Label("Delete All Recipes", systemImage: "trash")
+                        Label(.deleteAllRecipes, systemImage: "trash")
                     }
                     .confirmationDialog(
-                        "Delete all recipes?",
+                        Text(.deleteAllRecipesConfirmTitle),
                         isPresented: $showConfirmDelete,
                         titleVisibility: .visible
                     ) {
-                        Button("Delete All", role: .destructive) {
+                        Button(.deleteAll, role: .destructive) {
                             recipes.forEach { modelContext.delete($0) }
                         }
-                        Button("Cancel", role: .cancel) {}
+                        Button(.cancel, role: .cancel) {}
                     } message: {
-                        Text("This will permanently remove all \(recipes.count) recipe(s).")
+                        Text(.deleteAllRecipesConfirmMessage(recipes.count))
                     }
 
                 } header: {
-                    Label("Sample Data", systemImage: "doc.badge.plus")
+                    Label(.sampleData, systemImage: "doc.badge.plus")
                 } footer: {
-                    Text("Sample photos must be added to the asset catalog imagesets (e.g. sample_carbonara) before generation. Recipe names, categories and ingredients can be edited afterwards.")
+                    Text(.sampleDataFooter)
                 }
 
                 // MARK: Stats
                 Section {
-                    LabeledContent("Total recipes", value: "\(recipes.count)")
-                    LabeledContent("Favourites",    value: "\(recipes.filter { $0.isFavorite }.count)")
+                    LabeledContent(.totalRecipes, value: "\(recipes.count)")
+                    LabeledContent(.favorites, value: "\(recipes.filter { $0.isFavorite }.count)")
                     ForEach(RecipeCategory.allCases) { cat in
-                        LabeledContent(cat.rawValue) {
+                        LabeledContent(cat.localizedName) {
                             Text("\(recipes.filter { $0.category == cat }.count)")
                                 .foregroundStyle(cat.color)
                         }
                     }
                 } header: {
-                    Label("Statistics", systemImage: "chart.bar")
+                    Label(.statistics, systemImage: "chart.bar")
                 }
 
                 // MARK: Placeholder
                 Section {
-                    Label("More options coming soon…", systemImage: "gear.circle")
+                    Label(.moreOptionsComingSoon, systemImage: "gear.circle")
                         .foregroundStyle(.secondary)
                 } header: {
-                    Label("General", systemImage: "gear")
+                    Label(.general, systemImage: "gear")
                 }
             }
-            .navigationTitle("Options")
-            .alert("Sample recipes generated!", isPresented: $generationDone) {
-                Button("OK", role: .cancel) {}
+            .navigationTitle(.options)
+            .alert(.sampleRecipesGeneratedTitle, isPresented: $generationDone) {
+                Button(.ok, role: .cancel) {}
             } message: {
-                Text("12 sample recipes were added. Tap any recipe card to edit its details.")
+                Text(.sampleRecipesGeneratedMessage)
             }
         }
     }

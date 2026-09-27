@@ -117,13 +117,13 @@ struct CarouselView: View {
                         UIImpactFeedbackGenerator(style: .medium).impactOccurred()
                     } label: {
                         Label(
-                            recipe.isFavorite ? "Remove from Favorites" : "Add to Favorites",
+                            recipe.isFavorite ? .removeFromFavorites : .addToFavorites,
                             systemImage: recipe.isFavorite ? "heart.slash" : "heart"
                         )
                     }
 
                     Button { recipeToEdit = recipe } label: {
-                        Label("Edit Recipe", systemImage: "pencil")
+                        Label(.editRecipe, systemImage: "pencil")
                     }
 
                     Divider()
@@ -134,7 +134,7 @@ struct CarouselView: View {
                         }
                         modelContext.delete(recipe)
                     } label: {
-                        Label("Delete Recipe", systemImage: "trash")
+                        Label(.deleteRecipe, systemImage: "trash")
                     }
                 }
             }

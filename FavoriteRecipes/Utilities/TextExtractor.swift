@@ -25,24 +25,24 @@ enum TextExtractor {
         switch type {
         case .text:
             let t = text ?? ""
-            return t.isEmpty ? "No ingredients text entered." : t
+            return t.isEmpty ? String(localized: .noIngredientsTextEntered) : t
 
         case .photo:
             guard let data = imageData,
                   let image = UIImage(data: data),
                   let cgImage = image.cgImage else {
-                return "No ingredients photo available."
+                return String(localized: .noIngredientsPhotoAvailable)
             }
             let recognized = await recognizeText(in: cgImage)
-            return recognized.isEmpty ? "No text could be recognized in the photo." : recognized
+            return recognized.isEmpty ? String(localized: .noTextRecognizedInPhoto) : recognized
 
         case .pdf:
             guard let data = pdfData,
                   let document = PDFDocument(data: data) else {
-                return "No PDF available."
+                return String(localized: .noPDFAvailable)
             }
             let extracted = extractText(from: document)
-            return extracted.isEmpty ? "No text found in the PDF." : extracted
+            return extracted.isEmpty ? String(localized: .noTextFoundInPDF) : extracted
         }
     }
 
