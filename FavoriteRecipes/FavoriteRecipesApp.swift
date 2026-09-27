@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import AppIntents
 
 @main
 struct FavoriteRecipesApp: App {
@@ -7,6 +8,7 @@ struct FavoriteRecipesApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
     let sharedModelContainer: ModelContainer
+    @State private var navigation: AppNavigation
 
     init() {
         let schema = Schema([Recipe.self])
@@ -20,11 +22,19 @@ struct FavoriteRecipesApp: App {
                 configurations: [ModelConfiguration(isStoredInMemoryOnly: true)]
             )
         }
+
+        // App Intents (Siri, Shortcuts, Spotlight) use the same store and navigation as the UI.
+        let container = sharedModelContainer
+        let navigation = AppNavigation()
+        _navigation = State(initialValue: navigation)
+        AppDependencyManager.shared.add(dependency: container)
+        AppDependencyManager.shared.add(dependency: navigation)
     }
 
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environment(navigation)
         }
         .modelContainer(sharedModelContainer)
     }
