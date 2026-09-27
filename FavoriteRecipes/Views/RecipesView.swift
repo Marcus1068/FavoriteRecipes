@@ -156,7 +156,12 @@ struct CategoryFilterView: View {
                     withAnimation(.spring(response: 0.3)) { selected = nil }
                 }
                 ForEach(RecipeCategory.allCases) { cat in
-                    FilterChip(title: cat.localizedName, icon: cat.icon, color: cat.color, isSelected: selected == cat) {
+                    FilterChip(
+                        title: cat.localizedName,
+                        icon: cat.icon,
+                        color: cat.color,
+                        isSelected: selected == cat
+                    ) {
                         withAnimation(.spring(response: 0.3)) {
                             selected = (selected == cat) ? nil : cat
                         }

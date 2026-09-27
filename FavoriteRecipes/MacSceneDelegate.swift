@@ -22,16 +22,16 @@ final class MacSceneDelegate: NSObject, UIWindowSceneDelegate {
         willConnectTo session: UISceneSession,
         options connectionOptions: UIScene.ConnectionOptions
     ) {
-        guard let ws = scene as? UIWindowScene else { return }
+        guard let windowScene = scene as? UIWindowScene else { return }
 
-        ws.sizeRestrictions?.minimumSize = MacWindowManager.minSize
+        windowScene.sizeRestrictions?.minimumSize = MacWindowManager.minSize
 
         // Defer one run-loop so the UIWindowScene is fully initialised, but
         // still fires before SwiftUI's first layout pass.
         DispatchQueue.main.async {
-            let frame = MacWindowManager.savedFrame(for: ws)
-                     ?? MacWindowManager.defaultFrame(for: ws)
-            ws.requestGeometryUpdate(
+            let frame = MacWindowManager.savedFrame(for: windowScene)
+                     ?? MacWindowManager.defaultFrame(for: windowScene)
+            windowScene.requestGeometryUpdate(
                 UIWindowScene.GeometryPreferences.Mac(systemFrame: frame),
                 errorHandler: nil
             )
@@ -40,26 +40,26 @@ final class MacSceneDelegate: NSObject, UIWindowSceneDelegate {
         // Register NSWindow autosave *after* the window is ready so AppKit
         // also tracks future moves/resizes automatically.
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            MacWindowManager.registerNSWindowAutosave(for: ws)
+            MacWindowManager.registerNSWindowAutosave(for: windowScene)
         }
     }
 
     // MARK: - Save on every deactivation / disconnect
 
     func sceneWillResignActive(_ scene: UIScene) {
-        guard let ws = scene as? UIWindowScene else { return }
-        MacWindowManager.saveFrame(for: ws)
+        guard let windowScene = scene as? UIWindowScene else { return }
+        MacWindowManager.saveFrame(for: windowScene)
     }
 
     func sceneDidEnterBackground(_ scene: UIScene) {
-        guard let ws = scene as? UIWindowScene else { return }
-        MacWindowManager.saveFrame(for: ws)
+        guard let windowScene = scene as? UIWindowScene else { return }
+        MacWindowManager.saveFrame(for: windowScene)
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
         // At disconnect the window may already be gone; save best-effort.
-        if let ws = scene as? UIWindowScene {
-            MacWindowManager.saveFrame(for: ws)
+        if let windowScene = scene as? UIWindowScene {
+            MacWindowManager.saveFrame(for: windowScene)
         }
     }
 }

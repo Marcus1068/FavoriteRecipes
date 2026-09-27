@@ -13,6 +13,8 @@ struct FavoriteRecipesApp: App {
         if let container = ModelContainer.make(schema: schema) {
             sharedModelContainer = container
         } else {
+            // An in-memory store is the last resort; there is nothing left to fall back to.
+            // swiftlint:disable:next force_try
             sharedModelContainer = try! ModelContainer(
                 for: schema,
                 configurations: [ModelConfiguration(isStoredInMemoryOnly: true)]

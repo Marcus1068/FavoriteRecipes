@@ -1,0 +1,16 @@
+included:
+  - FavoriteRecipes
+
+disabled_rules:
+  - colon    # the codebase aligns declarations in columns
+  - comma    # same, for aligned argument lists
+  - implicit_optional_initialization  # keep explicit `= nil` defaults on SwiftData/CloudKit models
+
+identifier_name:
+  excluded:
+    - i
+    - x
+    - y
+    - w
+    - h
+    - id

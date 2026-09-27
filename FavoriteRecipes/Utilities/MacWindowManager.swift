@@ -26,10 +26,10 @@ enum MacWindowManager {
             frame = scene.windows.first?.frame
         }
 
-        guard let f = frame, f.width >= minSize.width, f.height >= minSize.height else { return }
+        guard let frame, frame.width >= minSize.width, frame.height >= minSize.height else { return }
 
         UserDefaults.standard.set(
-            ["x": f.origin.x, "y": f.origin.y, "w": f.width, "h": f.height],
+            ["x": frame.origin.x, "y": frame.origin.y, "w": frame.width, "h": frame.height],
             forKey: userDefaultsKey
         )
         UserDefaults.standard.synchronize()
@@ -38,23 +38,23 @@ enum MacWindowManager {
     /// Returns the saved frame if it is valid and on-screen, otherwise nil.
     static func savedFrame(for scene: UIWindowScene) -> CGRect? {
         guard
-            let d = UserDefaults.standard.dictionary(forKey: userDefaultsKey) as? [String: Double],
-            let x = d["x"], let y = d["y"],
-            let w = d["w"], let h = d["h"],
+            let saved = UserDefaults.standard.dictionary(forKey: userDefaultsKey) as? [String: Double],
+            let x = saved["x"], let y = saved["y"],
+            let w = saved["w"], let h = saved["h"],
             w >= minSize.width, h >= minSize.height
         else { return nil }
 
-        let f = CGRect(x: x, y: y, width: w, height: h)
+        let frame = CGRect(x: x, y: y, width: w, height: h)
         // Reject frames that are off-screen (e.g. secondary display removed).
-        return scene.screen.bounds.intersects(f.insetBy(dx: 80, dy: 80)) ? f : nil
+        return scene.screen.bounds.intersects(frame.insetBy(dx: 80, dy: 80)) ? frame : nil
     }
 
     /// A sensible default: centred on the current screen.
     static func defaultFrame(for scene: UIWindowScene) -> CGRect {
-        let s = scene.screen.bounds
+        let screenBounds = scene.screen.bounds
         return CGRect(
-            x: (s.width  - defaultSize.width)  / 2,
-            y: (s.height - defaultSize.height) / 2,
+            x: (screenBounds.width  - defaultSize.width)  / 2,
+            y: (screenBounds.height - defaultSize.height) / 2,
             width: defaultSize.width,
             height: defaultSize.height
         )
@@ -69,12 +69,12 @@ enum MacWindowManager {
         guard let uiWindow = scene.windows.first else { return }
         let getSel = NSSelectorFromString("nsWindow")
         guard uiWindow.responds(to: getSel),
-              let ns = uiWindow.perform(getSel)?.takeUnretainedValue() as? NSObject
+              let nsWindow = uiWindow.perform(getSel)?.takeUnretainedValue() as? NSObject
         else { return }
 
         let setSel = NSSelectorFromString("setFrameAutosaveName:")
-        guard ns.responds(to: setSel) else { return }
-        ns.perform(setSel, with: autosaveName)
+        guard nsWindow.responds(to: setSel) else { return }
+        nsWindow.perform(setSel, with: autosaveName)
     }
 }
 #endif

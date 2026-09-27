@@ -52,16 +52,7 @@ final class ArrowKeyView: UIView {
         if !handled {
             super.pressesBegan(presses, with: event)
         }
-    }
-
-    override func pressesEnded(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
-        super.pressesEnded(presses, with: event)
-    }
-
-    override func pressesCancelled(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
-        super.pressesCancelled(presses, with: event)
-    }
-}
+    }}
 
 // MARK: - SwiftUI wrapper
 

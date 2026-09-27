@@ -15,19 +15,19 @@ func presentShareSheet(items: [Any]) {
         let window = scene.keyWindow
     else { return }
 
-    let vc = UIActivityViewController(activityItems: items, applicationActivities: nil)
+    let activityController = UIActivityViewController(activityItems: items, applicationActivities: nil)
 
     // iPad / Mac Catalyst: anchor the popover to the window centre.
     // On iPhone this is ignored and a standard action sheet appears.
-    vc.popoverPresentationController?.sourceView = window
-    vc.popoverPresentationController?.sourceRect = CGRect(
+    activityController.popoverPresentationController?.sourceView = window
+    activityController.popoverPresentationController?.sourceRect = CGRect(
         x: window.bounds.midX, y: window.bounds.midY, width: 1, height: 1
     )
-    vc.popoverPresentationController?.permittedArrowDirections = []
+    activityController.popoverPresentationController?.permittedArrowDirections = []
 
     // Walk to the topmost presented view controller so we don't try to
     // present over an already-presenting controller.
     var presenter: UIViewController? = window.rootViewController
     while let next = presenter?.presentedViewController { presenter = next }
-    presenter?.present(vc, animated: true)
+    presenter?.present(activityController, animated: true)
 }

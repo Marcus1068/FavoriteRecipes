@@ -24,8 +24,8 @@ enum TextExtractor {
     ) async -> String {
         switch type {
         case .text:
-            let t = text ?? ""
-            return t.isEmpty ? String(localized: .noIngredientsTextEntered) : t
+            let entered = text ?? ""
+            return entered.isEmpty ? String(localized: .noIngredientsTextEntered) : entered
 
         case .photo:
             guard let data = imageData,

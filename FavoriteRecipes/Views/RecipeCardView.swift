@@ -143,7 +143,8 @@ struct RecipeCardView: View {
                 // ingredientsText is always up-to-date (no async work needed here).
                 Button {
                     let text = recipe.ingredientsText?.trimmingCharacters(in: .whitespacesAndNewlines)
-                    presentShareSheet(items: [text?.isEmpty == false ? text! : String(localized: .noIngredientsTextAvailable)])
+                    let fallback = String(localized: .noIngredientsTextAvailable)
+                    presentShareSheet(items: [text?.isEmpty == false ? text! : fallback])
                 } label: {
                     HStack(spacing: 5) {
                         Image(systemName: "square.and.arrow.up")
@@ -208,49 +209,51 @@ private extension View {
 // MARK: - Previews
 
 #Preview("Landscape 16:9") {
+    // swiftlint:disable:next force_try
     let container = try! ModelContainer(for: Recipe.self,
                                         configurations: .init(isStoredInMemoryOnly: true))
     let ctx = ModelContext(container)
-    let cW: CGFloat = 300, cH: CGFloat = 360
+    let cardWidth: CGFloat = 300, cardHeight: CGFloat = 360
 
-    let img = UIGraphicsImageRenderer(size: CGSize(width: 1920, height: 1080)).image { c in
-        UIColor.systemBlue.setFill(); c.fill(CGRect(x:0,y:0,width:960,height:1080))
-        UIColor.systemIndigo.setFill(); c.fill(CGRect(x:960,y:0,width:960,height:1080))
+    let img = UIGraphicsImageRenderer(size: CGSize(width: 1920, height: 1080)).image { context in
+        UIColor.systemBlue.setFill(); context.fill(CGRect(x:0,y:0,width:960,height:1080))
+        UIColor.systemIndigo.setFill(); context.fill(CGRect(x:960,y:0,width:960,height:1080))
         "LANDSCAPE 16:9\nFull image always visible".draw(at: CGPoint(x:200,y:480),
             withAttributes: [.foregroundColor: UIColor.white,
                              .font: UIFont.boldSystemFont(ofSize: 55)])
     }
-    let r = Recipe(name: "Salmon Pasta", category: .fish)
-    r.recipeImageData = img.jpegData(compressionQuality: 0.9); ctx.insert(r)
+    let recipe = Recipe(name: "Salmon Pasta", category: .fish)
+    recipe.recipeImageData = img.jpegData(compressionQuality: 0.9); ctx.insert(recipe)
 
     return ZStack {
-        RecipeCardView(recipe: r, cardWidth: cW, cardHeight: cH, showContextMenu: false)
+        RecipeCardView(recipe: recipe, cardWidth: cardWidth, cardHeight: cardHeight, showContextMenu: false)
             .modelContext(ctx)
         RoundedRectangle(cornerRadius: 24).stroke(.red, lineWidth: 2)
-            .frame(width: cW, height: cH)
+            .frame(width: cardWidth, height: cardHeight)
     }
 }
 
 #Preview("Portrait 9:16") {
+    // swiftlint:disable:next force_try
     let container = try! ModelContainer(for: Recipe.self,
                                         configurations: .init(isStoredInMemoryOnly: true))
     let ctx = ModelContext(container)
-    let cW: CGFloat = 300, cH: CGFloat = 360
+    let cardWidth: CGFloat = 300, cardHeight: CGFloat = 360
 
-    let img = UIGraphicsImageRenderer(size: CGSize(width: 1080, height: 1920)).image { c in
-        UIColor.systemOrange.setFill(); c.fill(CGRect(x:0,y:0,width:1080,height:960))
-        UIColor.systemRed.setFill(); c.fill(CGRect(x:0,y:960,width:1080,height:960))
+    let img = UIGraphicsImageRenderer(size: CGSize(width: 1080, height: 1920)).image { context in
+        UIColor.systemOrange.setFill(); context.fill(CGRect(x:0,y:0,width:1080,height:960))
+        UIColor.systemRed.setFill(); context.fill(CGRect(x:0,y:960,width:1080,height:960))
         "PORTRAIT\n9:16\nFull image visible".draw(at: CGPoint(x:200,y:900),
             withAttributes: [.foregroundColor: UIColor.white,
                              .font: UIFont.boldSystemFont(ofSize: 80)])
     }
-    let r = Recipe(name: "Beef Steak", category: .meat)
-    r.recipeImageData = img.jpegData(compressionQuality: 0.9); ctx.insert(r)
+    let recipe = Recipe(name: "Beef Steak", category: .meat)
+    recipe.recipeImageData = img.jpegData(compressionQuality: 0.9); ctx.insert(recipe)
 
     return ZStack {
-        RecipeCardView(recipe: r, cardWidth: cW, cardHeight: cH, showContextMenu: false)
+        RecipeCardView(recipe: recipe, cardWidth: cardWidth, cardHeight: cardHeight, showContextMenu: false)
             .modelContext(ctx)
         RoundedRectangle(cornerRadius: 24).stroke(.red, lineWidth: 2)
-            .frame(width: cW, height: cH)
+            .frame(width: cardWidth, height: cardHeight)
     }
 }

@@ -11,8 +11,8 @@ extension UIImage {
     func jpegDataFitting(maxBytes: Int = 1_048_576) -> Data? {
         // Phase 1 – quality reduction only
         let qualities: [CGFloat] = [0.85, 0.70, 0.55, 0.40, 0.25, 0.10]
-        for q in qualities {
-            if let data = jpegData(compressionQuality: q), data.count <= maxBytes {
+        for quality in qualities {
+            if let data = jpegData(compressionQuality: quality), data.count <= maxBytes {
                 return data
             }
         }
