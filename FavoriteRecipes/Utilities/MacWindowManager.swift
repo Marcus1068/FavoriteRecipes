@@ -12,21 +12,13 @@ enum MacWindowManager {
 
     // MARK: - Frame persistence
 
-    /// Saves the current window frame.  Reads from `effectiveGeometry` if
-    /// available (same coordinate space as `systemFrame`), falls back to
-    /// `UIWindow.frame`.
+    /// Saves the current window frame.  Reads from `effectiveGeometry`,
+    /// which is in the same coordinate space as the `systemFrame` we pass
+    /// to `requestGeometryUpdate`.
     static func saveFrame(for scene: UIWindowScene) {
-        let frame: CGRect?
+        let frame = scene.effectiveGeometry.systemFrame
 
-        // Prefer effectiveGeometry — it's in the same coordinate space as
-        // the systemFrame we pass to requestGeometryUpdate.
-        if let macGeo = scene.effectiveGeometry as? UIWindowScene.GeometryPreferences.Mac {
-            frame = macGeo.systemFrame
-        } else {
-            frame = scene.windows.first?.frame
-        }
-
-        guard let frame, frame.width >= minSize.width, frame.height >= minSize.height else { return }
+        guard frame.width >= minSize.width, frame.height >= minSize.height else { return }
 
         UserDefaults.standard.set(
             ["x": frame.origin.x, "y": frame.origin.y, "w": frame.width, "h": frame.height],
