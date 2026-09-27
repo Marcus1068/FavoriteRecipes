@@ -4,7 +4,6 @@
     "%@": {
       "shouldTranslate": false
     },
-    "%lld": {},
     "about": {
       "extractionState": "manual",
       "localizations": {
@@ -42,16 +41,16 @@
     "aboutVersion": {
       "extractionState": "manual",
       "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Version 1.0"
-          }
-        },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Version 1.0"
+            "value": "Version %1$@ (%2$@)"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Version %1$@ (%2$@)"
           }
         }
       }
@@ -685,7 +684,6 @@
         }
       }
     },
-    "FavoriteRecipes": {},
     "favorites": {
       "extractionState": "manual",
       "localizations": {
@@ -699,23 +697,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Favorites"
-          }
-        }
-      }
-    },
-    "general": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Allgemein"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "General"
           }
         }
       }
@@ -1155,23 +1136,6 @@
         }
       }
     },
-    "moreOptionsComingSoon": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Weitere Optionen folgen bald …"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "More options coming soon…"
-          }
-        }
-      }
-    },
     "myRecipes": {
       "extractionState": "manual",
       "localizations": {
@@ -1246,74 +1210,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "New Recipe"
-          }
-        }
-      }
-    },
-    "noIngredientsPhotoAvailable": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kein Zutatenfoto vorhanden."
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No ingredients photo available."
-          }
-        }
-      }
-    },
-    "noIngredientsTextAvailable": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kein Zutatentext verfügbar."
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No ingredients text available."
-          }
-        }
-      }
-    },
-    "noIngredientsTextEntered": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kein Zutatentext eingegeben."
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No ingredients text entered."
-          }
-        }
-      }
-    },
-    "noPDFAvailable": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kein PDF vorhanden."
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No PDF available."
           }
         }
       }

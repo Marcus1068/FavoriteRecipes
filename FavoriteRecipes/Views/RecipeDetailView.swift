@@ -6,6 +6,9 @@ struct RecipeDetailView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     @Bindable var recipe: Recipe
+    /// A new recipe is a draft: it is only inserted into the model context
+    /// when the user taps Add, so cancelling leaves nothing behind.
+    var isNew = false
 
     // Photo pickers
     @State private var recipePhotoItem: PhotosPickerItem?
@@ -16,25 +19,86 @@ struct RecipeDetailView: View {
     @State private var showIngredientsCamera = false
     @State private var showPDFPicker         = false
 
-    // Vision extraction state
-    @State private var isExtractingIngredients = false
+    // Text extraction state
+    @State private var extractionMessage: LocalizedStringResource?
+    @State private var extractionError: LocalizedStringResource?
+
+    // Confirmations
+    @State private var recipeToDelete: Recipe?
+    @State private var showDiscardConfirmation = false
 
     var body: some View {
         NavigationStack {
             Form {
-                recipePhotoSection
-                nameSection
-                categorySection
-                ingredientsSection
-                deleteSection
+                RecipePhotoSection(
+                    recipe: recipe,
+                    photoItem: $recipePhotoItem,
+                    onTakePhoto: { showRecipeCamera = true }
+                )
+                RecipeNameSection(recipe: recipe)
+                RecipeCategorySection(recipe: recipe)
+                RecipeDetailsSection(recipe: recipe)
+                RecipeIngredientsSection(
+                    recipe: recipe,
+                    extractionMessage: extractionMessage,
+                    extractionError: extractionError,
+                    photoItem: $ingredientsPhotoItem,
+                    onTakePhoto: { showIngredientsCamera = true },
+                    onChoosePDF: { showPDFPicker = true }
+                )
+                RecipeTextSection(
+                    title: .instructions,
+                    systemImage: "list.number",
+                    placeholder: .instructionsPlaceholder,
+                    text: $recipe.instructions
+                )
+                RecipeTextSection(
+                    title: .notes,
+                    systemImage: "note.text",
+                    placeholder: .notesPlaceholder,
+                    text: $recipe.notes
+                )
+                RecipeSourceSection(recipe: recipe)
+                if !isNew {
+                    Section {
+                        Button(role: .destructive) {
+                            recipeToDelete = recipe
+                        } label: {
+                            Label(.deleteRecipe, systemImage: "trash")
+                        }
+                    }
+                }
             }
             .navigationTitle(recipe.name.isEmpty ? String(localized: .newRecipe) : recipe.name)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button(.done) { dismiss() }
-                        .fontWeight(.semibold)
+                if isNew {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button(.cancel, action: cancelDraft)
+                    }
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button(.add, action: addDraft)
+                            .disabled(!recipe.hasContent)
+                    }
+                } else {
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button(.done) { dismiss() }
+                    }
                 }
+            }
+            // Swiping a draft away would silently lose what was entered.
+            .interactiveDismissDisabled(isNew && recipe.hasContent)
+            .confirmationDialog(
+                Text(.discardRecipeConfirmTitle),
+                isPresented: $showDiscardConfirmation,
+                titleVisibility: .visible
+            ) {
+                Button(.discard, role: .destructive) { dismiss() }
+                Button(.keepEditing, role: .cancel) {}
+            }
+            .confirmDeletion(of: $recipeToDelete) { recipe in
+                modelContext.delete(recipe)
+                dismiss()
             }
             // Camera sheets (unavailable on Mac Catalyst)
 #if !targetEnvironment(macCatalyst)
@@ -48,13 +112,10 @@ struct RecipeDetailView: View {
                 }
             }
 #endif
-            // PDF picker
-            .sheet(isPresented: $showPDFPicker) {
-                DocumentPicker { data in
-                    recipe.ingredientsPDFData = data
-                    showPDFPicker = false
-                    extractAndStoreText(pdfData: data)
-                }
+            .fileImporter(isPresented: $showPDFPicker, allowedContentTypes: [.pdf]) { result in
+                guard case .success(let url) = result, let data = Self.readSecurityScoped(url) else { return }
+                recipe.ingredientsPDFData = data
+                extractAndStoreText(pdfData: data)
             }
             // Photo transfers
             .onChange(of: recipePhotoItem) { _, item in
@@ -78,200 +139,69 @@ struct RecipeDetailView: View {
         }
     }
 
-    // MARK: - Vision extraction
+    // MARK: - Draft handling
 
-    /// Runs OCR or PDF text extraction in the background, then writes the
-    /// result into `recipe.ingredientsText` and switches the type to `.text`
-    /// so the user can immediately see and edit the extracted content.
+    private func addDraft() {
+        modelContext.insert(recipe)
+        dismiss()
+    }
+
+    private func cancelDraft() {
+        if recipe.hasContent {
+            showDiscardConfirmation = true
+        } else {
+            dismiss()
+        }
+    }
+
+    // MARK: - File import
+
+    /// Reads a file picked with `fileImporter`, which is outside the sandbox.
+    private static func readSecurityScoped(_ url: URL) -> Data? {
+        let didAccess = url.startAccessingSecurityScopedResource()
+        defer { if didAccess { url.stopAccessingSecurityScopedResource() } }
+        return try? Data(contentsOf: url)
+    }
+
+    // MARK: - Text extraction
+
+    /// Reads text from the photo or PDF, stores it as the ingredients text and
+    /// switches to the text tab so it can be checked. When Apple Intelligence is
+    /// available, the text is then organized into ingredients and steps.
     private func extractAndStoreText(imageData: Data? = nil, pdfData: Data? = nil) {
-        isExtractingIngredients = true
+        extractionError = nil
+        extractionMessage = .extractingText
         Task {
-            let type: IngredientsType = imageData != nil ? .photo : .pdf
-            let text = await TextExtractor.extract(
-                type:      type,
-                text:      nil,
-                imageData: imageData,
-                pdfData:   pdfData
-            )
+            defer { extractionMessage = nil }
+
+            let text: String?
+            if let imageData {
+                text = await TextExtractor.text(fromImageData: imageData)
+            } else if let pdfData {
+                text = await TextExtractor.text(fromPDFData: pdfData)
+            } else {
+                text = nil
+            }
+            guard let text else {
+                extractionError = imageData != nil ? .noTextRecognizedInPhoto : .noTextFoundInPDF
+                return
+            }
+
             recipe.ingredientsText = text
-            recipe.ingredientsType = .text     // switch to text tab to show result
-            isExtractingIngredients = false
-        }
-    }
+            recipe.ingredientsType = .text
 
-    // MARK: - Sections
-
-    private var recipePhotoSection: some View {
-        Section {
-            if let data = recipe.recipeImageData, let img = UIImage(data: data) {
-                Image(uiImage: img)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(maxHeight: 200)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
-                    .frame(maxWidth: .infinity)
-                Button(role: .destructive) {
-                    recipe.recipeImageData = nil
-                } label: {
-                    Label(.removePhoto, systemImage: "xmark.circle")
-                }
+            guard RecipeAssistant.isAvailable else { return }
+            extractionMessage = .organizingRecipe
+            // Best effort: if the model fails, the raw text is already in place.
+            if let suggestion = try? await RecipeAssistant.structure(text) {
+                recipe.applySuggestion(
+                    name: suggestion.name,
+                    category: suggestion.category.recipeCategory,
+                    ingredients: suggestion.ingredients,
+                    steps: suggestion.steps,
+                    updatingCategory: isNew
+                )
             }
-            PhotosPicker(selection: $recipePhotoItem, matching: .images) {
-                Label(.chooseFromLibrary, systemImage: "photo.on.rectangle")
-            }
-            #if !targetEnvironment(macCatalyst)
-            if UIImagePickerController.isSourceTypeAvailable(.camera) {
-                Button { showRecipeCamera = true } label: {
-                    Label(.takePhoto, systemImage: "camera")
-                }
-            }
-            #endif
-        } header: {
-            Label(.recipePhoto, systemImage: "camera.fill")
-        }
-    }
-
-    private var nameSection: some View {
-        Section {
-            TextField(.recipeNamePlaceholder, text: $recipe.name)
-        } header: {
-            Label(.name, systemImage: "textformat")
-        }
-    }
-
-    private var categorySection: some View {
-        Section {
-            Picker(.category, selection: $recipe.category) {
-                ForEach(RecipeCategory.allCases) { cat in
-                    HStack {
-                        Text(cat.icon)
-                        Text(cat.localizedName)
-                    }
-                    .tag(cat)
-                }
-            }
-            .pickerStyle(.wheel)
-            .frame(height: 120)
-        } header: {
-            Label(.category, systemImage: "tag.fill")
-        }
-    }
-
-    private var ingredientsSection: some View {
-        Section {
-            Picker(.ingredientsType, selection: $recipe.ingredientsType) {
-                ForEach(IngredientsType.allCases, id: \.self) { type in
-                    Label(type.localizedName, systemImage: type.icon).tag(type)
-                }
-            }
-            .pickerStyle(.segmented)
-
-            // Extraction progress banner
-            if isExtractingIngredients {
-                HStack(spacing: 10) {
-                    ProgressView()
-                    Text(.extractingText)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
-                .padding(.vertical, 4)
-            }
-
-            switch recipe.ingredientsType {
-            case .photo:  ingredientsPhotoContent
-            case .pdf:    ingredientsPDFContent
-            case .text:   ingredientsTextContent
-            }
-        } header: {
-            Label(.ingredients, systemImage: "list.bullet")
-        }
-    }
-
-    private var deleteSection: some View {
-        Section {
-            Button(role: .destructive) {
-                modelContext.delete(recipe)
-                dismiss()
-            } label: {
-                Label(.deleteRecipe, systemImage: "trash")
-            }
-        }
-    }
-
-    // MARK: - Ingredients Content
-
-    @ViewBuilder
-    private var ingredientsPhotoContent: some View {
-        if let data = recipe.ingredientsImageData, let img = UIImage(data: data) {
-            Image(uiImage: img)
-                .resizable()
-                .scaledToFit()
-                .frame(maxHeight: 180)
-                .clipShape(RoundedRectangle(cornerRadius: 10))
-                .frame(maxWidth: .infinity)
-            Button(role: .destructive) {
-                recipe.ingredientsImageData = nil
-            } label: {
-                Label(.removePhoto, systemImage: "xmark.circle")
-            }
-        }
-        PhotosPicker(selection: $ingredientsPhotoItem, matching: .images) {
-            Label(.chooseFromLibrary, systemImage: "photo.on.rectangle")
-        }
-        #if !targetEnvironment(macCatalyst)
-        if UIImagePickerController.isSourceTypeAvailable(.camera) {
-            Button { showIngredientsCamera = true } label: {
-                Label(.takePhoto, systemImage: "camera")
-            }
-        }
-        #endif
-    }
-
-    @ViewBuilder
-    private var ingredientsPDFContent: some View {
-        if let data = recipe.ingredientsPDFData {
-            HStack(spacing: 12) {
-                Image(systemName: "doc.richtext.fill")
-                    .font(.largeTitle)
-                    .foregroundStyle(.red)
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(.pdfLoaded)
-                        .font(.headline)
-                    Text(Int64(data.count), format: .byteCount(style: .file))
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-                Spacer()
-            }
-            Button(role: .destructive) {
-                recipe.ingredientsPDFData = nil
-            } label: {
-                Label(.removePDF, systemImage: "xmark.circle")
-            }
-        }
-        Button { showPDFPicker = true } label: {
-            Label(
-                recipe.ingredientsPDFData == nil ? .choosePDF : .replacePDF,
-                systemImage: "doc.badge.plus"
-            )
-        }
-    }
-
-    @ViewBuilder
-    private var ingredientsTextContent: some View {
-        ZStack(alignment: .topLeading) {
-            if (recipe.ingredientsText ?? "").isEmpty {
-                Text(.ingredientsPlaceholder)
-                    .foregroundStyle(.secondary)
-                    .allowsHitTesting(false)
-                    .padding(.top, 8)
-                    .padding(.leading, 5)
-            }
-            TextEditor(text: Binding(
-                get: { recipe.ingredientsText ?? "" },
-                set: { recipe.ingredientsText = $0.isEmpty ? nil : $0 }
-            ))
-            .frame(minHeight: 150)
         }
     }
 }

@@ -22,16 +22,25 @@ import SwiftUI
 final class ArrowKeyView: UIView {
     var onLeft: (() -> Void)?
     var onRight: (() -> Void)?
+    /// False while a text field (e.g. search) should keep keyboard focus.
+    var isEnabled = true
 
     override var canBecomeFirstResponder: Bool { true }
 
     override func didMoveToWindow() {
         super.didMoveToWindow()
-        if window != nil {
-            // Defer to next run-loop so SwiftUI's layout pass finishes first.
-            DispatchQueue.main.async { [weak self] in
-                self?.becomeFirstResponder()
-            }
+        requestFocusIfAppropriate()
+    }
+
+    /// Takes first-responder status unless that would steal it from something
+    /// the user is typing into: a focused search field or a presented sheet.
+    func requestFocusIfAppropriate() {
+        guard isEnabled, !isFirstResponder, let window,
+              window.rootViewController?.presentedViewController == nil
+        else { return }
+        // Defer to the next run-loop turn so SwiftUI's layout pass finishes first.
+        Task { @MainActor [weak self] in
+            self?.becomeFirstResponder()
         }
     }
 
@@ -52,7 +61,8 @@ final class ArrowKeyView: UIView {
         if !handled {
             super.pressesBegan(presses, with: event)
         }
-    }}
+    }
+}
 
 // MARK: - SwiftUI wrapper
 
@@ -64,6 +74,8 @@ final class ArrowKeyView: UIView {
 /// updateUIView is called on every SwiftUI state change (e.g. sheet dismiss),
 /// which is where we re-acquire first responder after a modal closes.
 struct KeyboardNavigationHandler: UIViewRepresentable {
+    /// Set to false while a text field should keep keyboard focus.
+    var isEnabled = true
     let onLeft: () -> Void
     let onRight: () -> Void
 
@@ -81,10 +93,13 @@ struct KeyboardNavigationHandler: UIViewRepresentable {
         uiView.onLeft = onLeft
         uiView.onRight = onRight
 
+        uiView.isEnabled = isEnabled
+        if !isEnabled, uiView.isFirstResponder {
+            uiView.resignFirstResponder()
+        }
+
         // Re-acquire first responder after state transitions (e.g. sheet
         // dismiss sets newRecipe = nil → SwiftUI re-renders → updateUIView).
-        if !uiView.isFirstResponder, uiView.window != nil {
-            DispatchQueue.main.async { uiView.becomeFirstResponder() }
-        }
+        uiView.requestFocusIfAppropriate()
     }
 }

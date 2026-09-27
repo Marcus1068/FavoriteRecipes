@@ -28,7 +28,7 @@ final class MacSceneDelegate: NSObject, UIWindowSceneDelegate {
 
         // Defer one run-loop so the UIWindowScene is fully initialised, but
         // still fires before SwiftUI's first layout pass.
-        DispatchQueue.main.async {
+        Task { @MainActor in
             let frame = MacWindowManager.savedFrame(for: windowScene)
                      ?? MacWindowManager.defaultFrame(for: windowScene)
             windowScene.requestGeometryUpdate(
@@ -39,7 +39,8 @@ final class MacSceneDelegate: NSObject, UIWindowSceneDelegate {
 
         // Register NSWindow autosave *after* the window is ready so AppKit
         // also tracks future moves/resizes automatically.
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+        Task { @MainActor in
+            try? await Task.sleep(for: .seconds(1))
             MacWindowManager.registerNSWindowAutosave(for: windowScene)
         }
     }

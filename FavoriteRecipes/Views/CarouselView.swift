@@ -28,6 +28,9 @@ struct CarouselView: View {
     @Environment(\.horizontalSizeClass) private var hSizeClass
     @GestureState private var dragOffset: CGFloat = 0
     @State private var recipeToEdit: Recipe?
+    @State private var recipeToDelete: Recipe?
+    /// Incremented on each favorite toggle to drive haptic feedback.
+    @State private var favoriteToggles = 0
 
     private var safeIndex: Int {
         guard !recipes.isEmpty else { return 0 }
@@ -56,7 +59,7 @@ struct CarouselView: View {
             let step = cardW + spacing
 
             ZStack {
-                ForEach(Array(recipes.enumerated()), id: \.element.id) { i, recipe in
+                ForEach(recipes.enumerated(), id: \.element.id) { i, recipe in
                     let delta     = CGFloat(i - safeIndex) * step + dragOffset
                     let absNorm   = abs(delta) / step
                     // Regular (iPad/Mac): steeper scale falloff so the selected
@@ -73,8 +76,11 @@ struct CarouselView: View {
                         recipe: recipe,
                         cardWidth: cardW,
                         cardHeight: cardH,
-                        showContextMenu: false
+                        onDelete: { recipeToDelete = recipe }
                     )
+                    // Only the centre card is on screen for VoiceOver; the page
+                    // indicator below is adjustable to move between recipes.
+                    .accessibilityHidden(!isCurrent)
                     .scaleEffect(scale)
                     .rotation3DEffect(
                         .degrees(rotY),
@@ -106,7 +112,8 @@ struct CarouselView: View {
             // Vertically centre the card frame within the allocated carousel space.
             .position(x: geo.size.width / 2, y: geo.size.height / 2)
             .clipped()
-            .contentShape(Rectangle())
+            .contentShape(.rect)
+            .sensoryFeedback(.impact(weight: .medium), trigger: favoriteToggles)
             // ── Context menu on the stable ZStack ───────────────────────────
             .contextMenu {
                 if let recipe = recipes[safe: safeIndex] {
@@ -114,7 +121,7 @@ struct CarouselView: View {
                         withAnimation(.spring(response: 0.35, dampingFraction: 0.6)) {
                             recipe.isFavorite.toggle()
                         }
-                        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                        favoriteToggles += 1
                     } label: {
                         Label(
                             recipe.isFavorite ? .removeFromFavorites : .addToFavorites,
@@ -129,10 +136,7 @@ struct CarouselView: View {
                     Divider()
 
                     Button(role: .destructive) {
-                        if safeIndex >= recipes.count - 1 {
-                            withAnimation { currentIndex = max(0, recipes.count - 2) }
-                        }
-                        modelContext.delete(recipe)
+                        recipeToDelete = recipe
                     } label: {
                         Label(.deleteRecipe, systemImage: "trash")
                     }
@@ -164,6 +168,12 @@ struct CarouselView: View {
             )
             .sheet(item: $recipeToEdit) { recipe in
                 RecipeDetailView(recipe: recipe)
+            }
+            .confirmDeletion(of: $recipeToDelete) { recipe in
+                if safeIndex >= recipes.count - 1 {
+                    withAnimation { currentIndex = max(0, recipes.count - 2) }
+                }
+                modelContext.delete(recipe)
             }
         }
     }

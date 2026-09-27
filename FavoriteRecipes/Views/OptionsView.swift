@@ -8,13 +8,25 @@ struct OptionsView: View {
     @State private var showConfirmGenerate = false
     @State private var showConfirmDelete   = false
     @State private var generationDone      = false
+    @AppStorage("inspireMeIncludesFavorites") private var inspireIncludesFavorites = false
 
     var body: some View {
         NavigationStack {
             List {
-                // MARK: Sample Data
+                // MARK: Inspire Me
                 Section {
-                    // Generate
+                    Toggle(isOn: $inspireIncludesFavorites) {
+                        Label(.inspireMeIncludesFavorites, systemImage: "heart")
+                    }
+                } header: {
+                    Label(.inspireMe, systemImage: "sparkles")
+                } footer: {
+                    Text(.inspireMeFooter)
+                }
+
+                // MARK: Sample Data (developer tool: needs sample images in the asset catalog)
+                #if DEBUG
+                Section {
                     Button {
                         showConfirmGenerate = true
                     } label: {
@@ -33,8 +45,15 @@ struct OptionsView: View {
                     } message: {
                         Text(.generateSampleRecipesConfirmMessage)
                     }
+                } header: {
+                    Label(.sampleData, systemImage: "doc.badge.plus")
+                } footer: {
+                    Text(.sampleDataFooter)
+                }
+                #endif
 
-                    // Delete all
+                // MARK: Data
+                Section {
                     Button(role: .destructive) {
                         showConfirmDelete = true
                     } label: {
@@ -52,33 +71,23 @@ struct OptionsView: View {
                     } message: {
                         Text(.deleteAllRecipesConfirmMessage(recipes.count))
                     }
-
+                    .disabled(recipes.isEmpty)
                 } header: {
-                    Label(.sampleData, systemImage: "doc.badge.plus")
-                } footer: {
-                    Text(.sampleDataFooter)
+                    Label(.data, systemImage: "externaldrive")
                 }
 
                 // MARK: Stats
                 Section {
-                    LabeledContent(.totalRecipes, value: "\(recipes.count)")
-                    LabeledContent(.favorites, value: "\(recipes.filter { $0.isFavorite }.count)")
+                    LabeledContent(.totalRecipes, value: recipes.count, format: .number)
+                    LabeledContent(.favorites, value: recipes.filter(\.isFavorite).count, format: .number)
                     ForEach(RecipeCategory.allCases) { cat in
                         LabeledContent(cat.localizedName) {
-                            Text("\(recipes.filter { $0.category == cat }.count)")
+                            Text(recipes.filter { $0.category == cat }.count, format: .number)
                                 .foregroundStyle(cat.color)
                         }
                     }
                 } header: {
                     Label(.statistics, systemImage: "chart.bar")
-                }
-
-                // MARK: Placeholder
-                Section {
-                    Label(.moreOptionsComingSoon, systemImage: "gear.circle")
-                        .foregroundStyle(.secondary)
-                } header: {
-                    Label(.general, systemImage: "gear")
                 }
             }
             .navigationTitle(.options)
