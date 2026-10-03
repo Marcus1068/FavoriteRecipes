@@ -25,6 +25,7 @@ struct RecipeCardView: View {
     var onDelete: (() -> Void)?
 
     @State private var showDetail = false
+    @State private var cookingRecipe: Recipe?
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -37,12 +38,14 @@ struct RecipeCardView: View {
             RecipeCardInfoStrip(
                 recipe: recipe,
                 onEdit: { showDetail = true },
+                onCook: { cookingRecipe = recipe },
                 onDelete: onDelete
             )
         }
         .frame(width: cardWidth, height: cardHeight)
         .clipShape(.rect(cornerRadius: 24))
         .sheet(isPresented: $showDetail) { RecipeDetailView(recipe: recipe) }
+        .cookingModeCover(item: $cookingRecipe)
     }
 }
 

@@ -4,6 +4,7 @@ import SwiftUI
 struct RecipeCardInfoStrip: View {
     @Bindable var recipe: Recipe
     let onEdit: () -> Void
+    let onCook: () -> Void
     let onDelete: (() -> Void)?
 
     var body: some View {
@@ -24,6 +25,7 @@ struct RecipeCardInfoStrip: View {
                     recipe.isFavorite.toggle()
                 }
                 .accessibilityAction(named: Text(.editRecipe), onEdit)
+                .accessibilityAction(named: Text(.cookingMode), onCook)
                 .accessibilityActions {
                     if let onDelete {
                         Button(.deleteRecipe, role: .destructive, action: onDelete)
@@ -43,6 +45,14 @@ struct RecipeCardInfoStrip: View {
                     .buttonStyle(.plain)
 
                 Spacer()
+
+                Button(.cookingMode, systemImage: "frying.pan", action: onCook)
+                    .labelStyle(.iconOnly)
+                    .font(.subheadline.weight(.semibold))
+                    .padding(9)
+                    .background(.ultraThinMaterial, in: .circle)
+                    .foregroundStyle(.white)
+                    .buttonStyle(.plain)
 
                 Button(.editRecipe, systemImage: "pencil", action: onEdit)
                     .labelStyle(.iconOnly)

@@ -26,8 +26,10 @@ struct CarouselView: View {
 
     @Environment(\.modelContext) private var modelContext
     @Environment(\.horizontalSizeClass) private var hSizeClass
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @GestureState private var dragOffset: CGFloat = 0
     @State private var recipeToEdit: Recipe?
+    @State private var recipeToCook: Recipe?
     @State private var recipeToDelete: Recipe?
     /// Incremented on each favorite toggle to drive haptic feedback.
     @State private var favoriteToggles = 0
@@ -67,8 +69,9 @@ struct CarouselView: View {
                     // Compact (iPhone): subtle falloff to keep the gentle feel.
                     let scaleShrink: CGFloat = isRegular ? 0.14 : 0.09
                     let scaleFloor: CGFloat  = isRegular ? 0.70 : 0.84
-                    let scale     = max(scaleFloor, 1.0 - absNorm * scaleShrink)
-                    let rotY      = Double(delta / (cardW * 1.6)) * (isRegular ? 16.0 : 13.0)
+                    // Reduce Motion: no scaling or 3-D tilt, neighbours only fade.
+                    let scale     = reduceMotion ? 1.0 : max(scaleFloor, 1.0 - absNorm * scaleShrink)
+                    let rotY      = reduceMotion ? 0.0 : Double(delta / (cardW * 1.6)) * (isRegular ? 16.0 : 13.0)
                     let opacity   = max(0.42, 1.0 - absNorm * 0.42)
                     let isCurrent = i == safeIndex
 
@@ -100,10 +103,7 @@ struct CarouselView: View {
                         .interactiveSpring(response: 0.30, dampingFraction: 0.86),
                         value: dragOffset
                     )
-                    .animation(
-                        .spring(response: 0.42, dampingFraction: 0.82),
-                        value: currentIndex
-                    )
+                    .animation(.carouselPaging(reduceMotion: reduceMotion), value: currentIndex)
                 }
             }
             // ZStack fills full allocated width; height = cardH (not geo.size.height)
@@ -118,7 +118,7 @@ struct CarouselView: View {
             .contextMenu {
                 if let recipe = recipes[safe: safeIndex] {
                     Button {
-                        withAnimation(.spring(response: 0.35, dampingFraction: 0.6)) {
+                        withAnimation(reduceMotion ? .easeInOut(duration: 0.2) : .spring(response: 0.35, dampingFraction: 0.6)) {
                             recipe.isFavorite.toggle()
                         }
                         favoriteToggles += 1
@@ -127,6 +127,10 @@ struct CarouselView: View {
                             recipe.isFavorite ? .removeFromFavorites : .addToFavorites,
                             systemImage: recipe.isFavorite ? "heart.slash" : "heart"
                         )
+                    }
+
+                    Button { recipeToCook = recipe } label: {
+                        Label(.cookingMode, systemImage: "frying.pan")
                     }
 
                     Button { recipeToEdit = recipe } label: {
@@ -157,7 +161,7 @@ struct CarouselView: View {
                         let effective = value.translation.width + extra * 0.35
                         let threshold = step * 0.28
 
-                        withAnimation(.spring(response: 0.42, dampingFraction: 0.82)) {
+                        withAnimation(.carouselPaging(reduceMotion: reduceMotion)) {
                             if effective < -threshold, safeIndex < recipes.count - 1 {
                                 currentIndex = safeIndex + 1
                             } else if effective > threshold, safeIndex > 0 {
@@ -169,6 +173,7 @@ struct CarouselView: View {
             .sheet(item: $recipeToEdit) { recipe in
                 RecipeDetailView(recipe: recipe)
             }
+            .cookingModeCover(item: $recipeToCook)
             .confirmDeletion(of: $recipeToDelete) { recipe in
                 if safeIndex >= recipes.count - 1 {
                     withAnimation { currentIndex = max(0, recipes.count - 2) }

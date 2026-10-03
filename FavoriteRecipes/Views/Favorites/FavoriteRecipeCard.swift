@@ -4,6 +4,7 @@ import SwiftUI
 struct FavoriteRecipeCard: View {
     @Bindable var recipe: Recipe
     @State private var showDetail = false
+    @State private var recipeToCook: Recipe?
 
     @ScaledMetric(relativeTo: .largeTitle) private var placeholderIconSize = 36
     @ScaledMetric private var side: CGFloat = 112
@@ -54,10 +55,14 @@ struct FavoriteRecipeCard: View {
             } label: {
                 Label(.removeFromFavorites, systemImage: "heart.slash")
             }
+            Button { recipeToCook = recipe } label: {
+                Label(.cookingMode, systemImage: "frying.pan")
+            }
             Button { showDetail = true } label: {
                 Label(.editRecipe, systemImage: "pencil")
             }
         }
+        .cookingModeCover(item: $recipeToCook)
         .sheet(isPresented: $showDetail) {
             RecipeDetailView(recipe: recipe)
         }

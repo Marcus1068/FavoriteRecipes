@@ -6,6 +6,8 @@ struct PageIndicatorView: View {
     let count: Int
     @Binding var current: Int
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     var body: some View {
         Group {
             if count > 11 {
@@ -28,7 +30,7 @@ struct PageIndicatorView: View {
         .accessibilityLabel(Text(.recipes))
         .accessibilityValue(Text(.pageIndicator(current + 1, count)))
         .accessibilityAdjustableAction { direction in
-            withAnimation(.spring(response: 0.42, dampingFraction: 0.82)) {
+            withAnimation(.carouselPaging(reduceMotion: reduceMotion)) {
                 switch direction {
                 case .increment: current = min(count - 1, current + 1)
                 case .decrement: current = max(0, current - 1)

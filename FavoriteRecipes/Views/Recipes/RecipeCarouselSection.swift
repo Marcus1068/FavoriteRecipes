@@ -8,6 +8,8 @@ struct RecipeCarouselSection: View {
     let isKeyboardEnabled: Bool
     let onPick: (Recipe) -> Void
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     var body: some View {
         CarouselView(recipes: recipes, currentIndex: $currentIndex)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -39,7 +41,7 @@ struct RecipeCarouselSection: View {
 
     private func move(by delta: Int) {
         guard let index = CarouselPaging.index(from: currentIndex, moving: delta, count: recipes.count) else { return }
-        withAnimation(.spring(response: 0.42, dampingFraction: 0.82)) {
+        withAnimation(.carouselPaging(reduceMotion: reduceMotion)) {
             currentIndex = index
         }
     }

@@ -6,6 +6,7 @@ struct RecipesView: View {
     @Environment(AppNavigation.self) private var navigation
     @AppStorage("inspireMeIncludesFavorites") private var inspireIncludesFavorites = false
     @Environment(\.horizontalSizeClass) private var hSizeClass
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Query(sort: \Recipe.createdAt, order: .reverse) private var allRecipes: [Recipe]
 
     @State private var filter = RecipeFilter()
@@ -69,7 +70,7 @@ struct RecipesView: View {
                     // Favorites strip — fixed ~150 pt, horizontal scroll inside
                     if !favorites.isEmpty {
                         FavoritesSection(recipes: favorites)
-                            .transition(.move(edge: .top).combined(with: .opacity))
+                            .transition(reduceMotion ? .opacity : .move(edge: .top).combined(with: .opacity))
                     }
 
                     if regular.isEmpty {
@@ -98,7 +99,7 @@ struct RecipesView: View {
             .searchable(text: $filter.searchText, prompt: Text(.searchPrompt))
             .searchFocused($isSearchFocused)
             .onChange(of: filter) {
-                withAnimation(.spring()) { currentIndex = 0 }
+                withAnimation(.carouselPaging(reduceMotion: reduceMotion)) { currentIndex = 0 }
             }
             .navigationTitle(.myRecipes)
             .navigationBarTitleDisplayMode(.inline)
@@ -154,7 +155,7 @@ struct RecipesView: View {
     /// (a favorite, or hidden by the current filter or search).
     private func show(_ recipe: Recipe) {
         if let index = regularRecipes.firstIndex(where: { $0.id == recipe.id }) {
-            withAnimation(.spring(response: 0.50, dampingFraction: 0.62)) {
+            withAnimation(reduceMotion ? .easeInOut(duration: 0.2) : .spring(response: 0.50, dampingFraction: 0.62)) {
                 currentIndex = index
             }
         } else {

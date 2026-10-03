@@ -8,6 +8,7 @@ struct InspireMeButton: View {
     let onPick: (Recipe) -> Void
 
     @State private var isSpinning = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         Button {
@@ -22,7 +23,7 @@ struct InspireMeButton: View {
             HStack(spacing: 8) {
                 Image(systemName: "sparkles")
                     .font(.headline)
-                    .rotationEffect(.degrees(isSpinning ? 360 : 0))
+                    .rotationEffect(.degrees(isSpinning && !reduceMotion ? 360 : 0))
                     .animation(isSpinning ? .linear(duration: 0.65) : .default, value: isSpinning)
                 Text(.inspireMe)
                     .font(.headline)
@@ -44,7 +45,7 @@ struct InspireMeButton: View {
             .clipShape(.capsule)
             .shadow(color: Color(red: 0.50, green: 0.20, blue: 0.90).opacity(0.45), radius: 14, y: 7)
         }
-        .scaleEffect(isSpinning ? 0.94 : 1.0)
+        .scaleEffect(isSpinning && !reduceMotion ? 0.94 : 1.0)
         .animation(.spring(response: 0.2), value: isSpinning)
         .sensoryFeedback(.selection, trigger: isSpinning) { _, spinning in spinning }
         .disabled(candidates.count <= 1)
