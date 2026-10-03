@@ -81,44 +81,13 @@ struct RecipesView: View {
                         }
                         .frame(maxHeight: .infinity)
                     } else {
-                        // ── Carousel ─────────────────────────────────────────────
-                        CarouselView(recipes: regular, currentIndex: $currentIndex)
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            .frame(minHeight: 220)
-                            // Arrow-key navigation via UIKit pressesBegan.
-                            // See KeyboardNavigationHandler.swift for the rationale
-                            // behind this approach vs onKeyPress / keyboardShortcut.
-                            .overlay {
-                                KeyboardNavigationHandler(
-                                    isEnabled: !isSearchFocused,
-                                    onLeft: {
-                                        guard currentIndex > 0 else { return }
-                                        withAnimation(.spring(response: 0.42, dampingFraction: 0.82)) {
-                                            currentIndex -= 1
-                                        }
-                                    },
-                                    onRight: {
-                                        guard currentIndex < regular.count - 1 else { return }
-                                        withAnimation(.spring(response: 0.42, dampingFraction: 0.82)) {
-                                            currentIndex += 1
-                                        }
-                                    }
-                                )
-                                .accessibilityHidden(true)
-                            }
-                        // ─────────────────────────────────────────────────────────
-
-                        // Page dots — always below the carousel
-                        PageIndicatorView(count: regular.count, current: $currentIndex)
-                            .padding(.vertical, 6)
-
-                        // Inspire Me — always visible at the bottom
-                        InspireMeButton(
-                            candidates: inspirationCandidates,
-                            current: regular[safe: currentIndex],
+                        RecipeCarouselSection(
+                            recipes: regular,
+                            inspirationCandidates: inspirationCandidates,
+                            currentIndex: $currentIndex,
+                            isKeyboardEnabled: !isSearchFocused,
                             onPick: show
                         )
-                            .padding(.bottom, 20)
                     }
                 }
             }

@@ -19,9 +19,7 @@ struct RecipeDetailView: View {
     @State private var showIngredientsCamera = false
     @State private var showPDFPicker         = false
 
-    // Text extraction state
-    @State private var extractionMessage: LocalizedStringResource?
-    @State private var extractionError: LocalizedStringResource?
+    @State private var extraction = IngredientsExtractionModel()
 
     // Confirmations
     @State private var recipeToDelete: Recipe?
@@ -40,8 +38,8 @@ struct RecipeDetailView: View {
                 RecipeDetailsSection(recipe: recipe)
                 RecipeIngredientsSection(
                     recipe: recipe,
-                    extractionMessage: extractionMessage,
-                    extractionError: extractionError,
+                    extractionMessage: extraction.message,
+                    extractionError: extraction.error,
                     photoItem: $ingredientsPhotoItem,
                     onTakePhoto: { showIngredientsCamera = true },
                     onChoosePDF: { showPDFPicker = true }
@@ -108,25 +106,25 @@ struct RecipeDetailView: View {
             .sheet(isPresented: $showIngredientsCamera) {
                 CameraPickerView { data in
                     recipe.ingredientsImageData = data
-                    extractAndStoreText(imageData: data)
+                    extractText(fromImageData: data)
                 }
             }
 #endif
             .fileImporter(isPresented: $showPDFPicker, allowedContentTypes: [.pdf]) { result in
                 guard case .success(let url) = result else { return }
                 guard let data = Self.readSecurityScoped(url) else {
-                    extractionError = .couldNotReadPDF
+                    extraction.error = .couldNotReadPDF
                     return
                 }
                 recipe.ingredientsPDFData = data
-                extractAndStoreText(pdfData: data)
+                extractText(fromPDFData: data)
             }
             // Photo transfers
             .onChange(of: recipePhotoItem) { _, item in
                 guard let item else { return }
                 Task {
                     guard let image = await loadImage(from: item) else {
-                        extractionError = .couldNotLoadPhoto
+                        extraction.error = .couldNotLoadPhoto
                         return
                     }
                     recipe.recipeImageData = image.jpegDataFitting()
@@ -136,12 +134,15 @@ struct RecipeDetailView: View {
                 guard let item else { return }
                 Task {
                     guard let image = await loadImage(from: item) else {
-                        extractionError = .couldNotLoadPhoto
+                        extraction.error = .couldNotLoadPhoto
                         return
                     }
-                    let data = image.jpegDataFitting()
+                    guard let data = image.jpegDataFitting() else {
+                        extraction.error = .couldNotLoadPhoto
+                        return
+                    }
                     recipe.ingredientsImageData = data
-                    extractAndStoreText(imageData: data)
+                    extractText(fromImageData: data)
                 }
             }
         }
@@ -179,43 +180,11 @@ struct RecipeDetailView: View {
 
     // MARK: - Text extraction
 
-    /// Reads text from the photo or PDF, stores it as the ingredients text and
-    /// switches to the text tab so it can be checked. When Apple Intelligence is
-    /// available, the text is then organized into ingredients and steps.
-    private func extractAndStoreText(imageData: Data? = nil, pdfData: Data? = nil) {
-        extractionError = nil
-        extractionMessage = .extractingText
-        Task {
-            defer { extractionMessage = nil }
+    private func extractText(fromImageData data: Data) {
+        Task { await extraction.extract(fromImageData: data, into: recipe, isNew: isNew) }
+    }
 
-            let text: String?
-            if let imageData {
-                text = await TextExtractor.text(fromImageData: imageData)
-            } else if let pdfData {
-                text = await TextExtractor.text(fromPDFData: pdfData)
-            } else {
-                text = nil
-            }
-            guard let text else {
-                extractionError = imageData != nil ? .noTextRecognizedInPhoto : .noTextFoundInPDF
-                return
-            }
-
-            recipe.ingredientsText = text
-            recipe.ingredientsType = .text
-
-            guard RecipeAssistant.isAvailable else { return }
-            extractionMessage = .organizingRecipe
-            // Best effort: if the model fails, the raw text is already in place.
-            if let suggestion = try? await RecipeAssistant.structure(text) {
-                recipe.applySuggestion(
-                    name: suggestion.name,
-                    category: suggestion.category.recipeCategory,
-                    ingredients: suggestion.ingredients,
-                    steps: suggestion.steps,
-                    updatingCategory: isNew
-                )
-            }
-        }
+    private func extractText(fromPDFData data: Data) {
+        Task { await extraction.extract(fromPDFData: data, into: recipe, isNew: isNew) }
     }
 }

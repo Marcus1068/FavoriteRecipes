@@ -44,7 +44,7 @@ struct RecipeIngredientsSection: View {
                 PlaceholderTextEditor(
                     placeholder: .ingredientsPlaceholder,
                     text: $recipe.ingredientsText,
-                    minHeight: 150
+                    minLines: 6
                 )
             }
         } header: {

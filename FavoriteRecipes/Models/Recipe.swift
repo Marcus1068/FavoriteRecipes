@@ -12,7 +12,7 @@ final class Recipe {
     @Attribute(.externalStorage) var ingredientsImageData: Data? = nil
     @Attribute(.externalStorage) var ingredientsPDFData: Data? = nil
     var ingredientsText: String? = nil
-    var createdAt: Date = Date()
+    var createdAt: Date = Date.now
 
     // Added with the recipe details feature. All optional or defaulted so
     // existing stores migrate automatically and CloudKit accepts the schema.
