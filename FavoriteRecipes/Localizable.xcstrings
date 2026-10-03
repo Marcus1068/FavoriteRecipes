@@ -1316,6 +1316,40 @@
         }
       }
     },
+    "couldNotLoadPhoto": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Das Foto konnte nicht geladen werden."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The photo could not be loaded."
+          }
+        }
+      }
+    },
+    "couldNotReadPDF": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Das PDF konnte nicht gelesen werden."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The PDF could not be read."
+          }
+        }
+      }
+    },
     "noTextFoundInPDF": {
       "extractionState": "manual",
       "localizations": {

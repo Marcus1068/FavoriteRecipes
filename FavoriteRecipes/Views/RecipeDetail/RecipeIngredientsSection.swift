@@ -6,7 +6,7 @@ struct RecipeIngredientsSection: View {
     @Bindable var recipe: Recipe
     /// Progress text while text is being read or organized; nil when idle.
     let extractionMessage: LocalizedStringResource?
-    /// Shown when no text could be read from the photo or PDF.
+    /// Shown when a photo or PDF could not be loaded, or no text could be read from it.
     let extractionError: LocalizedStringResource?
     @Binding var photoItem: PhotosPickerItem?
     let onTakePhoto: () -> Void

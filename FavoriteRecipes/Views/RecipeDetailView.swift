@@ -113,27 +113,35 @@ struct RecipeDetailView: View {
             }
 #endif
             .fileImporter(isPresented: $showPDFPicker, allowedContentTypes: [.pdf]) { result in
-                guard case .success(let url) = result, let data = Self.readSecurityScoped(url) else { return }
+                guard case .success(let url) = result else { return }
+                guard let data = Self.readSecurityScoped(url) else {
+                    extractionError = .couldNotReadPDF
+                    return
+                }
                 recipe.ingredientsPDFData = data
                 extractAndStoreText(pdfData: data)
             }
             // Photo transfers
             .onChange(of: recipePhotoItem) { _, item in
+                guard let item else { return }
                 Task {
-                    if let raw = try? await item?.loadTransferable(type: Data.self),
-                       let image = UIImage(data: raw) {
-                        recipe.recipeImageData = image.jpegDataFitting()
+                    guard let image = await loadImage(from: item) else {
+                        extractionError = .couldNotLoadPhoto
+                        return
                     }
+                    recipe.recipeImageData = image.jpegDataFitting()
                 }
             }
             .onChange(of: ingredientsPhotoItem) { _, item in
+                guard let item else { return }
                 Task {
-                    if let raw  = try? await item?.loadTransferable(type: Data.self),
-                       let image = UIImage(data: raw) {
-                        let data = image.jpegDataFitting()
-                        recipe.ingredientsImageData = data
-                        extractAndStoreText(imageData: data)
+                    guard let image = await loadImage(from: item) else {
+                        extractionError = .couldNotLoadPhoto
+                        return
                     }
+                    let data = image.jpegDataFitting()
+                    recipe.ingredientsImageData = data
+                    extractAndStoreText(imageData: data)
                 }
             }
         }
@@ -155,6 +163,12 @@ struct RecipeDetailView: View {
     }
 
     // MARK: - File import
+
+    /// Loads the picked photo; nil when the transfer fails or the data isn't an image.
+    private func loadImage(from item: PhotosPickerItem) async -> UIImage? {
+        guard let raw = try? await item.loadTransferable(type: Data.self) else { return nil }
+        return UIImage(data: raw)
+    }
 
     /// Reads a file picked with `fileImporter`, which is outside the sandbox.
     private static func readSecurityScoped(_ url: URL) -> Data? {

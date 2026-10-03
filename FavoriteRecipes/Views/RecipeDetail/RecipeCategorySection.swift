@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Category wheel picker.
+/// Category picker.
 struct RecipeCategorySection: View {
     @Bindable var recipe: Recipe
 
@@ -15,8 +15,7 @@ struct RecipeCategorySection: View {
                     .tag(cat)
                 }
             }
-            .pickerStyle(.wheel)
-            .frame(height: 120)
+            .pickerStyle(.navigationLink)
         } header: {
             Label(.category, systemImage: "tag.fill")
         }

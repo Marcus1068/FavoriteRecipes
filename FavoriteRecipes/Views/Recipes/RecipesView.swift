@@ -32,6 +32,10 @@ struct RecipesView: View {
     // MARK: - Body
 
     var body: some View {
+        // Filter once per body pass instead of on every access.
+        let favorites = favoriteRecipes
+        let regular = regularRecipes
+
         NavigationStack {
             // ── Layout root is VStack + .background, NOT ZStack ──────────────
             // Using ZStack as the root caused SwiftUI to propose the full
@@ -46,7 +50,7 @@ struct RecipesView: View {
                 CategoryFilterView(selected: $filter.category)
                     .padding(.vertical, 10)
 
-                if favoriteRecipes.isEmpty && regularRecipes.isEmpty {
+                if favorites.isEmpty && regular.isEmpty {
                     Spacer()
                     if allRecipes.isEmpty {
                         EmptyCarouselView(onAdd: addNewRecipe)
@@ -63,12 +67,12 @@ struct RecipesView: View {
                     Spacer()
                 } else {
                     // Favorites strip — fixed ~150 pt, horizontal scroll inside
-                    if !favoriteRecipes.isEmpty {
-                        FavoritesSection(recipes: favoriteRecipes)
+                    if !favorites.isEmpty {
+                        FavoritesSection(recipes: favorites)
                             .transition(.move(edge: .top).combined(with: .opacity))
                     }
 
-                    if regularRecipes.isEmpty {
+                    if regular.isEmpty {
                         // Every recipe in view is a favorite, so the carousel is empty.
                         ContentUnavailableView {
                             Label(.allRecipesAreFavorites, systemImage: "heart")
@@ -78,13 +82,13 @@ struct RecipesView: View {
                         .frame(maxHeight: .infinity)
                     } else {
                         // ── Carousel ─────────────────────────────────────────────
-                        CarouselView(recipes: regularRecipes, currentIndex: $currentIndex)
+                        CarouselView(recipes: regular, currentIndex: $currentIndex)
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
                             .frame(minHeight: 220)
                             // Arrow-key navigation via UIKit pressesBegan.
                             // See KeyboardNavigationHandler.swift for the rationale
                             // behind this approach vs onKeyPress / keyboardShortcut.
-                            .overlay(
+                            .overlay {
                                 KeyboardNavigationHandler(
                                     isEnabled: !isSearchFocused,
                                     onLeft: {
@@ -94,24 +98,24 @@ struct RecipesView: View {
                                         }
                                     },
                                     onRight: {
-                                        guard currentIndex < regularRecipes.count - 1 else { return }
+                                        guard currentIndex < regular.count - 1 else { return }
                                         withAnimation(.spring(response: 0.42, dampingFraction: 0.82)) {
                                             currentIndex += 1
                                         }
                                     }
                                 )
                                 .accessibilityHidden(true)
-                            )
+                            }
                         // ─────────────────────────────────────────────────────────
 
                         // Page dots — always below the carousel
-                        PageIndicatorView(count: regularRecipes.count, current: $currentIndex)
+                        PageIndicatorView(count: regular.count, current: $currentIndex)
                             .padding(.vertical, 6)
 
                         // Inspire Me — always visible at the bottom
                         InspireMeButton(
                             candidates: inspirationCandidates,
-                            current: regularRecipes[safe: currentIndex],
+                            current: regular[safe: currentIndex],
                             onPick: show
                         )
                             .padding(.bottom, 20)
@@ -119,12 +123,12 @@ struct RecipesView: View {
                 }
             }
             .background {
-                RecipesBackground(recipe: regularRecipes[safe: currentIndex])
+                RecipesBackground(recipe: regular[safe: currentIndex])
                     .animation(.easeInOut(duration: 0.55), value: currentIndex)
             }
             .searchable(text: $filter.searchText, prompt: Text(.searchPrompt))
             .searchFocused($isSearchFocused)
-            .onChange(of: filter) { _, _ in
+            .onChange(of: filter) {
                 withAnimation(.spring()) { currentIndex = 0 }
             }
             .navigationTitle(.myRecipes)
@@ -161,12 +165,12 @@ struct RecipesView: View {
                 }
                 await SpotlightIndexer.reindex(allRecipes)
             }
-            .onChange(of: regularRecipes.count) { _, count in
+            .onChange(of: regular.count) { _, count in
                 if currentIndex >= count {
                     withAnimation { currentIndex = max(0, count - 1) }
                 }
             }
-            .animation(.easeInOut(duration: 0.35), value: favoriteRecipes.isEmpty)
+            .animation(.easeInOut(duration: 0.35), value: favorites.isEmpty)
         }
     }
 

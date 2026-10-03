@@ -13,6 +13,8 @@ struct RatingPicker: View {
                     Image(systemName: star <= rating ? "star.fill" : "star")
                         .foregroundStyle(star <= rating ? .yellow : .secondary)
                         .font(.title3)
+                        .frame(minWidth: 44, minHeight: 44)
+                        .contentShape(.rect)
                 }
                 .buttonStyle(.plain)
             }

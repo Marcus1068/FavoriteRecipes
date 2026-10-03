@@ -6,7 +6,7 @@ struct FavoriteRecipeCard: View {
     @State private var showDetail = false
 
     @ScaledMetric(relativeTo: .largeTitle) private var placeholderIconSize = 36
-    private let side: CGFloat = 112
+    @ScaledMetric private var side: CGFloat = 112
 
     var body: some View {
         Button { showDetail = true } label: {
@@ -36,12 +36,12 @@ struct FavoriteRecipeCard: View {
                 .accessibilityHidden(true)
 
                 Text(recipe.name.isEmpty ? String(localized: .untitled) : recipe.name)
-                    .font(.caption.weight(.semibold))
+                    .font(.caption.bold())
                     .lineLimit(1)
                     .frame(width: side, alignment: .leading)
 
                 Text(recipe.category.localizedName)
-                    .font(.caption2)
+                    .font(.caption)
                     .foregroundStyle(recipe.category.color)
                     .frame(width: side, alignment: .leading)
             }

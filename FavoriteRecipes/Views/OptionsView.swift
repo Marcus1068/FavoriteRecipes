@@ -11,6 +11,8 @@ struct OptionsView: View {
     @AppStorage("inspireMeIncludesFavorites") private var inspireIncludesFavorites = false
 
     var body: some View {
+        let categoryCounts = recipes.reduce(into: [RecipeCategory: Int]()) { $0[$1.category, default: 0] += 1 }
+
         NavigationStack {
             List {
                 // MARK: Inspire Me
@@ -79,10 +81,10 @@ struct OptionsView: View {
                 // MARK: Stats
                 Section {
                     LabeledContent(.totalRecipes, value: recipes.count, format: .number)
-                    LabeledContent(.favorites, value: recipes.filter(\.isFavorite).count, format: .number)
+                    LabeledContent(.favorites, value: recipes.count(where: \.isFavorite), format: .number)
                     ForEach(RecipeCategory.allCases) { cat in
                         LabeledContent(cat.localizedName) {
-                            Text(recipes.filter { $0.category == cat }.count, format: .number)
+                            Text(categoryCounts[cat, default: 0], format: .number)
                                 .foregroundStyle(cat.color)
                         }
                     }
