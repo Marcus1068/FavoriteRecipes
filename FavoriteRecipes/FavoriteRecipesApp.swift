@@ -10,6 +10,7 @@ struct FavoriteRecipesApp: App {
     let sharedModelContainer: ModelContainer
     @State private var navigation: AppNavigation
     @State private var undoDelete = UndoDeleteModel()
+    @State private var timerCenter = TimerCenter()
 
     init() {
         let schema = Schema([Recipe.self])
@@ -37,6 +38,7 @@ struct FavoriteRecipesApp: App {
             ContentView()
                 .environment(navigation)
                 .environment(undoDelete)
+                .environment(timerCenter)
         }
         .modelContainer(sharedModelContainer)
         .commands {

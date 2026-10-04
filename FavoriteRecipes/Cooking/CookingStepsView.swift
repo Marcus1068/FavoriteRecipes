@@ -28,6 +28,8 @@ struct CookingStepsView: View {
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
 
+                StepTimerButtons(step: model.steps[model.currentStep], recipeName: model.recipeName)
+
                 Text(.stepProgress(model.currentStep + 1, model.steps.count))
                     .font(.headline)
                     .foregroundStyle(.secondary)

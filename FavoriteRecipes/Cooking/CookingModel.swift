@@ -8,18 +8,22 @@ import Observation
 final class CookingModel {
     let steps: [String]
     let ingredients: [String]
+    /// Used to name the timers started from a step.
+    let recipeName: String
     var currentStep = 0
     private(set) var checkedIngredients: Set<Int> = []
 
-    init(steps: [String], ingredients: [String]) {
+    init(steps: [String], ingredients: [String], recipeName: String = "") {
         self.steps = steps
         self.ingredients = ingredients
+        self.recipeName = recipeName
     }
 
     convenience init(recipe: Recipe) {
         self.init(
             steps: CookingParser.steps(from: recipe.instructions),
-            ingredients: CookingParser.ingredients(from: recipe.ingredientsText)
+            ingredients: CookingParser.ingredients(from: recipe.ingredientsText),
+            recipeName: recipe.displayName
         )
     }
 

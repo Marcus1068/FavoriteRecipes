@@ -86,6 +86,9 @@ struct RecipesView: View {
                     }
                     Spacer()
                 } else {
+                    ActiveTimersList()
+                        .padding(.bottom, 8)
+
                     if dynamicTypeSize.isAccessibilitySize {
                         // Fixed-size cards cannot hold accessibility text sizes; use a list.
                         RecipeListView(

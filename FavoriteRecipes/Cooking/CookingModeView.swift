@@ -21,7 +21,8 @@ struct CookingModeView: View {
 
     var body: some View {
         NavigationStack {
-            Group {
+            VStack {
+                ActiveTimersList()
                 if horizontalSizeClass == .regular {
                     HStack(alignment: .top, spacing: 0) {
                         CookingIngredientsList(model: model)
