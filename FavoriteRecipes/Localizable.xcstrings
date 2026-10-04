@@ -465,13 +465,13 @@
               "one": {
                 "stringUnit": {
                   "state": "translated",
-                  "value": "Dadurch wird 1 Rezept endgültig gelöscht."
+                  "value": "Dadurch wird 1 Rezept gelöscht. Du kannst das direkt danach rückgängig machen."
                 }
               },
               "other": {
                 "stringUnit": {
                   "state": "translated",
-                  "value": "Dadurch werden alle %lld Rezepte endgültig gelöscht."
+                  "value": "Dadurch werden alle %lld Rezepte gelöscht. Du kannst das direkt danach rückgängig machen."
                 }
               }
             }
@@ -483,13 +483,13 @@
               "one": {
                 "stringUnit": {
                   "state": "translated",
-                  "value": "This will permanently remove 1 recipe."
+                  "value": "This will remove 1 recipe. You can undo it right afterwards."
                 }
               },
               "other": {
                 "stringUnit": {
                   "state": "translated",
-                  "value": "This will permanently remove all %lld recipes."
+                  "value": "This will remove all %lld recipes. You can undo it right afterwards."
                 }
               }
             }

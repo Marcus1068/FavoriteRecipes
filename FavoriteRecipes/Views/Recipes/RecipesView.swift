@@ -7,6 +7,7 @@ struct RecipesView: View {
     @AppStorage("inspireMeIncludesFavorites") private var inspireIncludesFavorites = false
     @Environment(\.horizontalSizeClass) private var hSizeClass
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Query(sort: \Recipe.createdAt, order: .reverse) private var allRecipes: [Recipe]
 
     @State private var filter = RecipeFilter()
@@ -67,28 +68,37 @@ struct RecipesView: View {
                     }
                     Spacer()
                 } else {
-                    // Favorites strip — fixed ~150 pt, horizontal scroll inside
-                    if !favorites.isEmpty {
-                        FavoritesSection(recipes: favorites)
-                            .transition(reduceMotion ? .opacity : .move(edge: .top).combined(with: .opacity))
-                    }
-
-                    if regular.isEmpty {
-                        // Every recipe in view is a favorite, so the carousel is empty.
-                        ContentUnavailableView {
-                            Label(.allRecipesAreFavorites, systemImage: "heart")
-                        } description: {
-                            Text(.allRecipesAreFavoritesMessage)
-                        }
-                        .frame(maxHeight: .infinity)
-                    } else {
-                        RecipeCarouselSection(
-                            recipes: regular,
+                    if dynamicTypeSize.isAccessibilitySize {
+                        // Fixed-size cards cannot hold accessibility text sizes; use a list.
+                        RecipeListView(
+                            recipes: favorites + regular,
                             inspirationCandidates: inspirationCandidates,
-                            currentIndex: $currentIndex,
-                            isKeyboardEnabled: !isSearchFocused,
                             onPick: show
                         )
+                    } else {
+                        // Favorites strip — fixed ~150 pt, horizontal scroll inside
+                        if !favorites.isEmpty {
+                            FavoritesSection(recipes: favorites)
+                                .transition(reduceMotion ? .opacity : .move(edge: .top).combined(with: .opacity))
+                        }
+
+                        if regular.isEmpty {
+                            // Every recipe in view is a favorite, so the carousel is empty.
+                            ContentUnavailableView {
+                                Label(.allRecipesAreFavorites, systemImage: "heart")
+                            } description: {
+                                Text(.allRecipesAreFavoritesMessage)
+                            }
+                            .frame(maxHeight: .infinity)
+                        } else {
+                            RecipeCarouselSection(
+                                recipes: regular,
+                                inspirationCandidates: inspirationCandidates,
+                                currentIndex: $currentIndex,
+                                isKeyboardEnabled: !isSearchFocused,
+                                onPick: show
+                            )
+                        }
                     }
                 }
             }
@@ -154,7 +164,10 @@ struct RecipesView: View {
     /// Scrolls the carousel to the recipe, or opens it if it isn't in the carousel
     /// (a favorite, or hidden by the current filter or search).
     private func show(_ recipe: Recipe) {
-        if let index = regularRecipes.firstIndex(where: { $0.id == recipe.id }) {
+        if dynamicTypeSize.isAccessibilitySize {
+            // The list has no carousel position to scroll to.
+            openedRecipe = recipe
+        } else if let index = regularRecipes.firstIndex(where: { $0.id == recipe.id }) {
             withAnimation(reduceMotion ? .easeInOut(duration: 0.2) : .spring(response: 0.50, dampingFraction: 0.62)) {
                 currentIndex = index
             }

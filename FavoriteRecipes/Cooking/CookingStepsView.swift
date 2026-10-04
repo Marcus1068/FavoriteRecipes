@@ -30,23 +30,8 @@ struct CookingStepsView: View {
                     .font(.headline)
                     .foregroundStyle(.secondary)
 
-                HStack {
-                    Button(.previousStep, systemImage: "chevron.left") {
-                        withAnimation { model.previousStep() }
-                    }
-                    .disabled(model.isFirstStep)
-
-                    Spacer()
-
-                    Button(.nextStep, systemImage: "chevron.right") {
-                        withAnimation { model.nextStep() }
-                    }
-                    .labelStyle(.titleAndIcon)
-                    .disabled(model.isLastStep)
-                }
-                .buttonStyle(.bordered)
-                .controlSize(.large)
-                .padding()
+                CookingStepButtons(model: model)
+                    .padding()
             }
             .sensoryFeedback(.selection, trigger: model.currentStep)
         }

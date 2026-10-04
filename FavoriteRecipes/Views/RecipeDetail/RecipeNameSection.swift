@@ -7,6 +7,8 @@ struct RecipeNameSection: View {
     var body: some View {
         Section {
             TextField(.recipeNamePlaceholder, text: $recipe.name)
+                .textInputAutocapitalization(.words)
+                .submitLabel(.done)
             LabeledContent(.rating) {
                 RatingPicker(rating: $recipe.rating)
             }
