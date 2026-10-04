@@ -19,6 +19,8 @@ struct RecipeSnapshot {
     let sourceURLString: String?
     let notes: String?
     let rating: Int
+    let tags: [String]
+    let cookHistoryData: Data?
 
     init(_ recipe: Recipe) {
         id = recipe.id
@@ -38,6 +40,8 @@ struct RecipeSnapshot {
         sourceURLString = recipe.sourceURLString
         notes = recipe.notes
         rating = recipe.rating
+        tags = recipe.tags
+        cookHistoryData = recipe.cookHistoryData
     }
 
     /// A new, unsaved recipe with the same contents and the same id.
@@ -57,6 +61,8 @@ struct RecipeSnapshot {
         recipe.sourceURLString = sourceURLString
         recipe.notes = notes
         recipe.rating = rating
+        recipe.tags = tags
+        recipe.cookHistoryData = cookHistoryData
         return recipe
     }
 }

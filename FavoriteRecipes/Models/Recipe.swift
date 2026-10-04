@@ -24,6 +24,9 @@ final class Recipe {
     var notes: String? = nil
     /// 0 = not rated, otherwise 1…5 stars.
     var rating: Int = 0
+    var tags: [String] = []
+    /// JSON-encoded `[CookEntry]`. Stored as data so the schema stays simple for CloudKit.
+    var cookHistoryData: Data? = nil
 
     init(
         name: String = "",
@@ -66,8 +69,7 @@ extension Recipe {
     func matches(searchText text: String) -> Bool {
         let query = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !query.isEmpty else { return true }
-        return [name, ingredientsText, instructions, notes]
-            .compactMap(\.self)
+        return ([name, ingredientsText, instructions, notes].compactMap(\.self) + tags)
             .contains { $0.localizedStandardContains(query) }
     }
 }

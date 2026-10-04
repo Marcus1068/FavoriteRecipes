@@ -5,7 +5,13 @@ struct ImportRecipeView: View {
     let onImport: (Recipe) -> Void
 
     @Environment(\.dismiss) private var dismiss
-    @State private var model = ImportRecipeModel()
+    @State private var model: ImportRecipeModel
+
+    /// `initialAddress` pre-fills the web address, e.g. when it comes from an import link.
+    init(initialAddress: String? = nil, onImport: @escaping (Recipe) -> Void) {
+        self.onImport = onImport
+        _model = State(initialValue: ImportRecipeModel(urlText: initialAddress ?? ""))
+    }
 
     var body: some View {
         NavigationStack {
@@ -31,6 +37,22 @@ struct ImportRecipeView: View {
                             .foregroundStyle(.red)
                     }
                 }
+
+                if model.offersPasteFallback {
+                    Section {
+                        TextField(.pastePageTextPlaceholder, text: $model.pastedText, axis: .vertical)
+                            .lineLimit(4...)
+                        PasteButton(payloadType: String.self) { strings in
+                            if let first = strings.first { model.pastedText = first }
+                        }
+                        Button(.useThisText, action: usePastedText)
+                            .disabled(!model.canUsePastedText)
+                    } header: {
+                        Text(.pasteFallbackTitle)
+                    } footer: {
+                        Text(.pasteFallbackMessage)
+                    }
+                }
             }
             .disabled(model.isImporting)
             .overlay {
@@ -39,6 +61,10 @@ struct ImportRecipeView: View {
                         .padding()
                         .background(.regularMaterial, in: .rect(cornerRadius: 12))
                 }
+            }
+            .task {
+                // An address from an import link starts the import right away.
+                if model.canImport { runImport() }
             }
             .navigationTitle(.importFromWeb)
             .navigationBarTitleDisplayMode(.inline)
@@ -50,6 +76,15 @@ struct ImportRecipeView: View {
                     Button(.import, action: runImport)
                         .disabled(!model.canImport)
                 }
+            }
+        }
+    }
+
+    private func usePastedText() {
+        Task {
+            if let draft = await model.draftFromPastedText() {
+                onImport(draft)
+                dismiss()
             }
         }
     }

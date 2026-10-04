@@ -8,7 +8,8 @@ struct UndoDeleteModelTests {
     private func makeContext() throws -> ModelContext {
         let container = try ModelContainer(
             for: Recipe.self,
-            configurations: ModelConfiguration(isStoredInMemoryOnly: true)
+            // The app has the CloudKit entitlement, so without this the test store would try to sync.
+            configurations: ModelConfiguration(isStoredInMemoryOnly: true, cloudKitDatabase: .none)
         )
         return ModelContext(container)
     }

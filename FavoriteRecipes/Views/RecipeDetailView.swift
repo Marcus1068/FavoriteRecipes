@@ -6,6 +6,7 @@ struct RecipeDetailView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     @Environment(UndoDeleteModel.self) private var undoDelete
+    @Query private var allRecipes: [Recipe]
     @Bindable var recipe: Recipe
     /// A new recipe is a draft: it is only inserted into the model context
     /// when the user taps Add, so cancelling leaves nothing behind.
@@ -25,6 +26,10 @@ struct RecipeDetailView: View {
     // Confirmations
     @State private var recipeToDelete: Recipe?
     @State private var showDiscardConfirmation = false
+    @State private var showCookLog = false
+
+    /// Tags already used by other recipes, offered as suggestions.
+    private var knownTags: [String] { TagList.all(in: allRecipes) }
 
     var body: some View {
         NavigationStack {
@@ -39,6 +44,7 @@ struct RecipeDetailView: View {
                     RecipeCleanupSection(recipe: recipe)
                 }
                 RecipeCategorySection(recipe: recipe)
+                RecipeTagsSection(recipe: recipe, knownTags: knownTags)
                 RecipeDetailsSection(recipe: recipe)
                 RecipeIngredientsSection(
                     recipe: recipe,
@@ -61,6 +67,9 @@ struct RecipeDetailView: View {
                     text: $recipe.notes
                 )
                 RecipeSourceSection(recipe: recipe)
+                if !isNew {
+                    CookingHistorySection(recipe: recipe) { showCookLog = true }
+                }
                 if !isNew {
                     Section {
                         Button(role: .destructive) {
@@ -97,6 +106,9 @@ struct RecipeDetailView: View {
             ) {
                 Button(.discard, role: .destructive) { dismiss() }
                 Button(.keepEditing, role: .cancel) {}
+            }
+            .sheet(isPresented: $showCookLog) {
+                CookLogSheet(recipe: recipe)
             }
             .confirmDeletion(of: $recipeToDelete) { recipe in
                 undoDelete.delete(recipe, from: modelContext)

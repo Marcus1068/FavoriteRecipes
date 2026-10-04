@@ -1,9 +1,12 @@
 import SwiftUI
+import SwiftData
 
 /// Small square card in the favorites strip; tap to open, long-press for options.
 struct FavoriteRecipeCard: View {
     @Bindable var recipe: Recipe
+    @Environment(\.modelContext) private var modelContext
     @State private var showDetail = false
+    @State private var copyToEdit: Recipe?
     @State private var recipeToCook: Recipe?
 
     @ScaledMetric(relativeTo: .largeTitle) private var placeholderIconSize = 36
@@ -61,6 +64,12 @@ struct FavoriteRecipeCard: View {
             Button { showDetail = true } label: {
                 Label(.editRecipe, systemImage: "pencil")
             }
+            Button { copyToEdit = recipe.duplicate(in: modelContext) } label: {
+                Label(.duplicate, systemImage: "plus.square.on.square")
+            }
+        }
+        .sheet(item: $copyToEdit) { copy in
+            RecipeDetailView(recipe: copy)
         }
         .cookingModeCover(item: $recipeToCook)
         .sheet(isPresented: $showDetail) {

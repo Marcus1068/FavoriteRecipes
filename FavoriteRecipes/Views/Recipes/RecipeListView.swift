@@ -40,6 +40,9 @@ struct RecipeListView: View {
                         ) { recipe.isFavorite.toggle() }
                         Button(.cookingMode, systemImage: "frying.pan") { recipeToCook = recipe }
                         Button(.editRecipe, systemImage: "pencil") { recipeToEdit = recipe }
+                        Button(.duplicate, systemImage: "plus.square.on.square") {
+                            recipeToEdit = recipe.duplicate(in: modelContext)
+                        }
                         Divider()
                         Button(.deleteRecipe, systemImage: "trash", role: .destructive) {
                             recipeToDelete = recipe

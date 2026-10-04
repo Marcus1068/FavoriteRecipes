@@ -39,5 +39,18 @@ struct FavoriteRecipesApp: App {
                 .environment(undoDelete)
         }
         .modelContainer(sharedModelContainer)
+        .commands {
+            // Keyboard shortcuts for iPad and Mac.
+            CommandGroup(replacing: .newItem) {
+                Button(.newRecipeMenu, systemImage: "square.and.pencil") {
+                    navigation.request(.newRecipe)
+                }
+                .keyboardShortcut("n")
+                Button(.importFromWeb, systemImage: "globe") {
+                    navigation.request(.importRecipe(address: nil))
+                }
+                .keyboardShortcut("i")
+            }
+        }
     }
 }

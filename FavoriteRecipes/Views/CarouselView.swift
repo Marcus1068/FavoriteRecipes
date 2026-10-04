@@ -138,6 +138,10 @@ struct CarouselView: View {
                         Label(.editRecipe, systemImage: "pencil")
                     }
 
+                    Button { recipeToEdit = recipe.duplicate(in: modelContext) } label: {
+                        Label(.duplicate, systemImage: "plus.square.on.square")
+                    }
+
                     Divider()
 
                     Button(role: .destructive) {

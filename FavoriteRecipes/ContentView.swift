@@ -25,6 +25,11 @@ struct ContentView: View {
             OnboardingView()
         }
         .task { showOnboardingIfNeeded() }
+        .onOpenURL { url in
+            if let address = ImportLink.recipeAddress(in: url) {
+                navigation.request(.importRecipe(address: address))
+            }
+        }
     }
 
     /// New users see the introduction once. People who already have recipes

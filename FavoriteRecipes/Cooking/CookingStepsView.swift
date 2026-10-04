@@ -3,6 +3,8 @@ import SwiftUI
 /// One preparation step at a time in large type, with previous/next buttons.
 struct CookingStepsView: View {
     @Bindable var model: CookingModel
+    /// Called when the cook taps "Done Cooking" on the last step.
+    var onFinish: () -> Void = {}
 
     var body: some View {
         if model.steps.isEmpty {
@@ -29,6 +31,12 @@ struct CookingStepsView: View {
                 Text(.stepProgress(model.currentStep + 1, model.steps.count))
                     .font(.headline)
                     .foregroundStyle(.secondary)
+
+                if model.isLastStep {
+                    Button(.finishCooking, systemImage: "checkmark.circle.fill", action: onFinish)
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(.large)
+                }
 
                 CookingStepButtons(model: model)
                     .padding()

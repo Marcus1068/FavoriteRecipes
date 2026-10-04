@@ -10,7 +10,9 @@ struct RecipesView: View {
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Query(sort: \Recipe.createdAt, order: .reverse) private var allRecipes: [Recipe]
 
-    @State private var filter = RecipeFilter()
+    @State private var filter = RecipeFilter(sort: RecipesView.storedSort)
+    /// Address to fill into the import sheet, e.g. from an import link.
+    @State private var importAddress: String?
     @FocusState private var isSearchFocused: Bool
     @State private var currentIndex: Int = 0
     @State private var newRecipe: Recipe?
@@ -19,6 +21,11 @@ struct RecipesView: View {
     @State private var showImport = false
     /// Draft from the web import, shown once the import sheet has closed.
     @State private var importedDraft: Recipe?
+
+    /// The sort order chosen last time, so it survives relaunches.
+    private static var storedSort: RecipeSort {
+        RecipeSort(rawValue: UserDefaults.standard.string(forKey: "recipeSort") ?? "") ?? .newest
+    }
 
     // MARK: - Filtered lists
 
@@ -58,6 +65,17 @@ struct RecipesView: View {
                         EmptyCarouselView(onAdd: addNewRecipe)
                     } else if filter.isSearching {
                         ContentUnavailableView.search(text: filter.searchText)
+                    } else if filter.hasExtraFilters {
+                        ContentUnavailableView {
+                            Label(.noMatchingRecipes, systemImage: "line.3.horizontal.decrease.circle")
+                        } description: {
+                            Text(.noMatchingRecipesMessage)
+                        } actions: {
+                            Button(.resetFilters) {
+                                filter.minimumRating = 0
+                                filter.tag = nil
+                            }
+                        }
                     } else {
                         // Recipes exist, just none in the selected category.
                         ContentUnavailableView {
@@ -108,16 +126,23 @@ struct RecipesView: View {
             }
             .searchable(text: $filter.searchText, prompt: Text(.searchPrompt))
             .searchFocused($isSearchFocused)
+            .onChange(of: filter.sort) { UserDefaults.standard.set(filter.sort.rawValue, forKey: "recipeSort") }
             .onChange(of: filter) {
                 withAnimation(.carouselPaging(reduceMotion: reduceMotion)) { currentIndex = 0 }
             }
             .navigationTitle(.myRecipes)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    SortFilterMenu(filter: $filter, availableTags: TagList.all(in: allRecipes))
+                }
                 ToolbarItem(placement: .primaryAction) {
                     Menu {
                         Button(.newRecipeMenu, systemImage: "square.and.pencil", action: addNewRecipe)
-                        Button(.importFromWeb, systemImage: "globe") { showImport = true }
+                        Button(.importFromWeb, systemImage: "globe") {
+                            importAddress = nil
+                            showImport = true
+                        }
                     } label: {
                         Label(.addRecipe, systemImage: "plus.circle.fill")
                             .font(.title3)
@@ -128,14 +153,18 @@ struct RecipesView: View {
                 RecipeDetailView(recipe: recipe, isNew: true)
             }
             .sheet(isPresented: $showImport, onDismiss: showImportedDraft) {
-                ImportRecipeView { importedDraft = $0 }
+                ImportRecipeView(initialAddress: importAddress) { importedDraft = $0 }
             }
             .sheet(item: $openedRecipe) { recipe in
                 RecipeDetailView(recipe: recipe)
             }
             // Requests from Siri, Shortcuts and Spotlight.
             .onChange(of: navigation.pendingRecipeID) { showPendingRecipe() }
-            .task { showPendingRecipe() }
+            .onChange(of: navigation.requestedAction) { performRequestedAction() }
+            .task {
+                showPendingRecipe()
+                performRequestedAction()
+            }
             // Keep Spotlight in sync; waits briefly so typing doesn't reindex on every keystroke.
             .task(id: SpotlightIndexer.signature(of: allRecipes)) {
                 do {
@@ -173,6 +202,19 @@ struct RecipesView: View {
             }
         } else {
             openedRecipe = recipe
+        }
+    }
+
+    /// Handles menu commands and import links.
+    private func performRequestedAction() {
+        switch navigation.consumeRequestedAction() {
+        case .newRecipe:
+            addNewRecipe()
+        case .importRecipe(let address):
+            importAddress = address
+            showImport = true
+        case nil:
+            break
         }
     }
 

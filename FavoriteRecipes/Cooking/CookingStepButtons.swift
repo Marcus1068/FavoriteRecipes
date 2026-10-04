@@ -8,17 +8,21 @@ struct CookingStepButtons: View {
         ViewThatFits {
             HStack {
                 Button(.previousStep, systemImage: "chevron.left", action: goBack)
+                    .keyboardShortcut(.leftArrow, modifiers: [])
                     .disabled(model.isFirstStep)
                 Spacer()
                 Button(.nextStep, systemImage: "chevron.right", action: goForward)
+                    .keyboardShortcut(.rightArrow, modifiers: [])
                     .labelStyle(.titleAndIcon)
                     .disabled(model.isLastStep)
             }
             VStack {
                 Button(.nextStep, systemImage: "chevron.right", action: goForward)
+                    .keyboardShortcut(.rightArrow, modifiers: [])
                     .labelStyle(.titleAndIcon)
                     .disabled(model.isLastStep)
                 Button(.previousStep, systemImage: "chevron.left", action: goBack)
+                    .keyboardShortcut(.leftArrow, modifiers: [])
                     .labelStyle(.titleAndIcon)
                     .disabled(model.isFirstStep)
             }

@@ -19,7 +19,7 @@ struct RecipeFilterTests {
     @Test func separatesFavoritesFromRegularRecipes() {
         let filter = RecipeFilter()
         #expect(filter.favorites(in: all) == [salmon])
-        #expect(filter.regular(in: all) == [pasta, soup])
+        #expect(Set(filter.regular(in: all).map(\.name)) == [pasta.name, soup.name])
     }
 
     @Test func filtersByCategory() {

@@ -14,6 +14,21 @@ final class AppNavigation {
     /// A recipe that should be shown as soon as the recipes screen can handle it.
     private(set) var pendingRecipeID: UUID?
 
+    /// An action for the recipes screen, e.g. from a menu command or an import link.
+    private(set) var requestedAction: AppAction?
+
+    /// Asks the recipes screen to perform an action, switching to it first.
+    func request(_ action: AppAction) {
+        selectedTab = .recipes
+        requestedAction = action
+    }
+
+    /// Returns the requested action once and clears it.
+    func consumeRequestedAction() -> AppAction? {
+        defer { requestedAction = nil }
+        return requestedAction
+    }
+
     /// Switches to the recipes tab and asks it to show the recipe.
     func showRecipe(id: UUID) {
         selectedTab = .recipes
