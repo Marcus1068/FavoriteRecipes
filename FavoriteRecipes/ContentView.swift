@@ -3,6 +3,7 @@ import SwiftData
 
 struct ContentView: View {
     @Environment(AppNavigation.self) private var navigation
+    @Environment(UndoDeleteModel.self) private var undoDelete
     @Environment(\.modelContext) private var modelContext
     @AppStorage("hasSeenOnboarding") private var hasSeenOnboarding = false
 
@@ -19,6 +20,7 @@ struct ContentView: View {
                 AboutView()
             }
         }
+        .overlay { UndoDeleteBanner(model: undoDelete) }
         .sheet(isPresented: $navigation.isShowingOnboarding, onDismiss: { hasSeenOnboarding = true }) {
             OnboardingView()
         }

@@ -4,6 +4,7 @@ import SwiftData
 struct OptionsView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(AppNavigation.self) private var navigation
+    @Environment(UndoDeleteModel.self) private var undoDelete
     @Query private var recipes: [Recipe]
 
     @State private var showConfirmGenerate = false
@@ -75,7 +76,7 @@ struct OptionsView: View {
                         titleVisibility: .visible
                     ) {
                         Button(.deleteAll, role: .destructive) {
-                            recipes.forEach { modelContext.delete($0) }
+                            undoDelete.delete(recipes, from: modelContext)
                         }
                         Button(.cancel, role: .cancel) {}
                     } message: {
@@ -112,5 +113,7 @@ struct OptionsView: View {
 
 #Preview {
     OptionsView()
+        .environment(AppNavigation())
+        .environment(UndoDeleteModel())
         .modelContainer(for: Recipe.self, inMemory: true)
 }

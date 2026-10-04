@@ -25,6 +25,7 @@ struct CarouselView: View {
     @Binding var currentIndex: Int
 
     @Environment(\.modelContext) private var modelContext
+    @Environment(UndoDeleteModel.self) private var undoDelete
     @Environment(\.horizontalSizeClass) private var hSizeClass
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @GestureState private var dragOffset: CGFloat = 0
@@ -178,7 +179,7 @@ struct CarouselView: View {
                 if safeIndex >= recipes.count - 1 {
                     withAnimation { currentIndex = max(0, recipes.count - 2) }
                 }
-                modelContext.delete(recipe)
+                undoDelete.delete(recipe, from: modelContext)
             }
         }
     }

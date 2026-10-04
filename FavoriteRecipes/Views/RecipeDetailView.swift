@@ -5,6 +5,7 @@ import PhotosUI
 struct RecipeDetailView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
+    @Environment(UndoDeleteModel.self) private var undoDelete
     @Bindable var recipe: Recipe
     /// A new recipe is a draft: it is only inserted into the model context
     /// when the user taps Add, so cancelling leaves nothing behind.
@@ -98,7 +99,7 @@ struct RecipeDetailView: View {
                 Button(.keepEditing, role: .cancel) {}
             }
             .confirmDeletion(of: $recipeToDelete) { recipe in
-                modelContext.delete(recipe)
+                undoDelete.delete(recipe, from: modelContext)
                 dismiss()
             }
             // Camera sheets (unavailable on Mac Catalyst)

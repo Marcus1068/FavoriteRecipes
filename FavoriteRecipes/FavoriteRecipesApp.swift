@@ -9,6 +9,7 @@ struct FavoriteRecipesApp: App {
 
     let sharedModelContainer: ModelContainer
     @State private var navigation: AppNavigation
+    @State private var undoDelete = UndoDeleteModel()
 
     init() {
         let schema = Schema([Recipe.self])
@@ -35,6 +36,7 @@ struct FavoriteRecipesApp: App {
         WindowGroup {
             ContentView()
                 .environment(navigation)
+                .environment(undoDelete)
         }
         .modelContainer(sharedModelContainer)
     }
