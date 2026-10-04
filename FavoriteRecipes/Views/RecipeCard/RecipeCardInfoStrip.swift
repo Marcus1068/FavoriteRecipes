@@ -49,19 +49,25 @@ struct RecipeCardInfoStrip: View {
                 Spacer()
 
                 Button(.cookingMode, systemImage: "frying.pan", action: onCook)
+                    .accessibilityIdentifier("card.cook")
                     .labelStyle(.iconOnly)
                     .font(.subheadline.weight(.semibold))
                     .padding(9)
                     .background(.ultraThinMaterial, in: .circle)
                     .foregroundStyle(.white)
+                    .frame(minWidth: 44, minHeight: 44)
+                    .contentShape(.rect)
                     .buttonStyle(.plain)
 
                 Button(.editRecipe, systemImage: "pencil", action: onEdit)
+                    .accessibilityIdentifier("card.edit")
                     .labelStyle(.iconOnly)
                     .font(.subheadline.weight(.semibold))
                     .padding(9)
                     .background(.ultraThinMaterial, in: .circle)
                     .foregroundStyle(.white)
+                    .frame(minWidth: 44, minHeight: 44)
+                    .contentShape(.rect)
                     .buttonStyle(.plain)
             }
         }

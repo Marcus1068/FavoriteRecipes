@@ -142,14 +142,18 @@ struct RecipesView: View {
                 ToolbarItem(placement: .primaryAction) {
                     Menu {
                         Button(.newRecipeMenu, systemImage: "square.and.pencil", action: addNewRecipe)
+                            .accessibilityIdentifier("newRecipeButton")
                         Button(.importFromWeb, systemImage: "globe") {
                             importAddress = nil
                             showImport = true
                         }
+                        .accessibilityIdentifier("importButton")
                     } label: {
                         Label(.addRecipe, systemImage: "plus.circle.fill")
                             .font(.title3)
+                            .frame(minWidth: 44, minHeight: 44)
                     }
+                    .accessibilityIdentifier("addMenu")
                 }
             }
             .sheet(item: $newRecipe) { recipe in

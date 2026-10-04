@@ -129,18 +129,22 @@ struct CarouselView: View {
                             systemImage: recipe.isFavorite ? "heart.slash" : "heart"
                         )
                     }
+                    .accessibilityIdentifier("menu.favorite")
 
                     Button { recipeToCook = recipe } label: {
                         Label(.cookingMode, systemImage: "frying.pan")
                     }
+                    .accessibilityIdentifier("menu.cook")
 
                     Button { recipeToEdit = recipe } label: {
                         Label(.editRecipe, systemImage: "pencil")
                     }
+                    .accessibilityIdentifier("menu.edit")
 
                     Button { recipeToEdit = recipe.duplicate(in: modelContext) } label: {
                         Label(.duplicate, systemImage: "plus.square.on.square")
                     }
+                    .accessibilityIdentifier("menu.duplicate")
 
                     Divider()
 
@@ -149,6 +153,7 @@ struct CarouselView: View {
                     } label: {
                         Label(.deleteRecipe, systemImage: "trash")
                     }
+                    .accessibilityIdentifier("menu.delete")
                 }
             }
             // simultaneousGesture lets drag co-exist with contextMenu long-press.

@@ -20,6 +20,8 @@ struct FilterChip: View {
             .padding(.vertical, 8)
             .background(isSelected ? color : Color.secondary.opacity(0.12), in: .capsule)
             .foregroundStyle(isSelected ? .white : .primary)
+            .frame(minHeight: 44)
+            .contentShape(.rect)
         }
         .buttonStyle(.plain)
         .accessibilityAddTraits(isSelected ? .isSelected : [])

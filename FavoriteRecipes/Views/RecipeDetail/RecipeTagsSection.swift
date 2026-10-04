@@ -25,11 +25,13 @@ struct RecipeTagsSection: View {
                             .buttonBorderShape(.capsule)
                             .controlSize(.small)
                             .accessibilityLabel(Text(.removeTagLabel(tag)))
+                            .accessibilityIdentifier("tagChip.\(tag)")
                     }
                 }
             }
 
             TextField(.addTagPlaceholder, text: $newTag)
+                .accessibilityIdentifier("tagField")
                 .textInputAutocapitalization(.never)
                 .submitLabel(.done)
                 .onSubmit { add(newTag) }

@@ -30,5 +30,6 @@ struct RecipeListRow: View {
             .contentShape(.rect)
         }
         .buttonStyle(.plain)
+        .accessibilityIdentifier("recipeListRow")
     }
 }

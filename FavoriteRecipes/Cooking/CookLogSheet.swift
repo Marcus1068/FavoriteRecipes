@@ -27,6 +27,7 @@ struct CookLogSheet: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button(.save, action: save)
+                        .accessibilityIdentifier("cookLog.save")
                 }
             }
         }

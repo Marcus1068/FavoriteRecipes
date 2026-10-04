@@ -21,6 +21,7 @@ struct UndoDeleteBanner: View {
                         model.undo(in: modelContext)
                     }
                     .bold()
+                    .accessibilityIdentifier("undoButton")
                 }
                 .padding()
                 .glassEffect(.regular, in: .rect(cornerRadius: 20))

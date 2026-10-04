@@ -38,6 +38,7 @@ struct CookingModeView: View {
                         }
                         .pickerStyle(.segmented)
                         .padding(.horizontal)
+                        .accessibilityIdentifier("cookingTabs")
 
                         switch tab {
                         case .ingredients:
@@ -56,6 +57,7 @@ struct CookingModeView: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button(.done) { dismiss() }
+                        .accessibilityIdentifier("cooking.done")
                 }
             }
             .sheet(isPresented: $isLogging) {

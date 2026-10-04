@@ -28,7 +28,6 @@ struct RecipeCarouselSection: View {
 
         // Page dots — always below the carousel
         PageIndicatorView(count: recipes.count, current: $currentIndex)
-            .padding(.vertical, 6)
 
         // Inspire Me — always visible at the bottom
         InspireMeButton(

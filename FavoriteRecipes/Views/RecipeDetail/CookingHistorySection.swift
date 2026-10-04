@@ -10,6 +10,7 @@ struct CookingHistorySection: View {
         Section {
             LabeledContent(.cookedTimes) {
                 Text(recipe.cookedCount, format: .number)
+                    .accessibilityIdentifier("cookedCount")
             }
             if let last = recipe.lastCookedAt {
                 LabeledContent(.lastCooked) {
@@ -35,6 +36,7 @@ struct CookingHistorySection: View {
             }
 
             Button(.logCooking, systemImage: "checkmark.circle", action: onLog)
+                .accessibilityIdentifier("logCookingButton")
         } header: {
             Label(.cookingHistory, systemImage: "frying.pan")
         }

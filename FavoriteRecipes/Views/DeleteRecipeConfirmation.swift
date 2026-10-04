@@ -28,6 +28,7 @@ struct DeleteRecipeConfirmation: ViewModifier {
             presenting: recipe
         ) { recipe in
             Button(.deleteRecipe, role: .destructive) { onConfirm(recipe) }
+                .accessibilityIdentifier("confirmDelete")
             Button(.cancel, role: .cancel) {}
         } message: { _ in
             Text(.deleteRecipeConfirmMessage)

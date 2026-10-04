@@ -9,20 +9,24 @@ struct CookingStepButtons: View {
             HStack {
                 Button(.previousStep, systemImage: "chevron.left", action: goBack)
                     .keyboardShortcut(.leftArrow, modifiers: [])
+                    .accessibilityIdentifier("previousStepButton")
                     .disabled(model.isFirstStep)
                 Spacer()
                 Button(.nextStep, systemImage: "chevron.right", action: goForward)
                     .keyboardShortcut(.rightArrow, modifiers: [])
+                    .accessibilityIdentifier("nextStepButton")
                     .labelStyle(.titleAndIcon)
                     .disabled(model.isLastStep)
             }
             VStack {
                 Button(.nextStep, systemImage: "chevron.right", action: goForward)
                     .keyboardShortcut(.rightArrow, modifiers: [])
+                    .accessibilityIdentifier("nextStepButton")
                     .labelStyle(.titleAndIcon)
                     .disabled(model.isLastStep)
                 Button(.previousStep, systemImage: "chevron.left", action: goBack)
                     .keyboardShortcut(.leftArrow, modifiers: [])
+                    .accessibilityIdentifier("previousStepButton")
                     .labelStyle(.titleAndIcon)
                     .disabled(model.isFirstStep)
             }

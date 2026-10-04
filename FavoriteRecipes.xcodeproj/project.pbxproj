@@ -18,6 +18,13 @@
 			remoteGlobalIDString = 3A37DFE702393E0FA6C8BBC2;
 			remoteInfo = FavoriteRecipesShare;
 		};
+		E99F73F289509DDDC3EBFFC5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2CF445332F65AA5D009DE620 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2CF4453A2F65AA5D009DE620;
+			remoteInfo = FavoriteRecipes;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -37,6 +44,7 @@
 /* Begin PBXFileReference section */
 		2CE424B53069A69600D3D8C6 /* FavoriteRecipesTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FavoriteRecipesTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2CF4453B2F65AA5D009DE620 /* FavoriteRecipes.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FavoriteRecipes.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		676226E236A23E238E3B1C77 /* FavoriteRecipesUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FavoriteRecipesUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A299E490BBED2CF3DFC8DF07 /* FavoriteRecipesShare.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = FavoriteRecipesShare.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -79,6 +87,11 @@
 			path = FavoriteRecipesShare;
 			sourceTree = "<group>";
 		};
+		FC4C011F1BD38F1F34920FBD /* FavoriteRecipesUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = FavoriteRecipesUITests;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -103,6 +116,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		CDF83FD989E60F210402362D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -111,6 +131,7 @@
 			children = (
 				2CF4453D2F65AA5D009DE620 /* FavoriteRecipes */,
 				2CE424B63069A69600D3D8C6 /* FavoriteRecipesTests */,
+				FC4C011F1BD38F1F34920FBD /* FavoriteRecipesUITests */,
 				413DF4F73EF8C9FCD698014E /* FavoriteRecipesShare */,
 				2CF4453C2F65AA5D009DE620 /* Products */,
 			);
@@ -121,6 +142,7 @@
 			children = (
 				2CF4453B2F65AA5D009DE620 /* FavoriteRecipes.app */,
 				2CE424B53069A69600D3D8C6 /* FavoriteRecipesTests.xctest */,
+				676226E236A23E238E3B1C77 /* FavoriteRecipesUITests.xctest */,
 				A299E490BBED2CF3DFC8DF07 /* FavoriteRecipesShare.appex */,
 			);
 			name = Products;
@@ -197,6 +219,29 @@
 			productReference = A299E490BBED2CF3DFC8DF07 /* FavoriteRecipesShare.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		8A67639F74080F56C5AA328F /* FavoriteRecipesUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8344B16103485A1C292BE01E /* Build configuration list for PBXNativeTarget "FavoriteRecipesUITests" */;
+			buildPhases = (
+				01F40072E3CF347862554017 /* Sources */,
+				CDF83FD989E60F210402362D /* Frameworks */,
+				53C9EFC6D892AA68BFCC8C92 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				CCD8099EE02CAB83BB43E451 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				FC4C011F1BD38F1F34920FBD /* FavoriteRecipesUITests */,
+			);
+			name = FavoriteRecipesUITests;
+			packageProductDependencies = (
+			);
+			productName = FavoriteRecipesUITests;
+			productReference = 676226E236A23E238E3B1C77 /* FavoriteRecipesUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -215,6 +260,10 @@
 					};
 					3A37DFE702393E0FA6C8BBC2 = {
 						CreatedOnToolsVersion = 27.0;
+					};
+					8A67639F74080F56C5AA328F = {
+						CreatedOnToolsVersion = 27.0;
+						TestTargetID = 2CF4453A2F65AA5D009DE620;
 					};
 				};
 			};
@@ -236,6 +285,7 @@
 				2CF4453A2F65AA5D009DE620 /* FavoriteRecipes */,
 				2CE424B43069A69600D3D8C6 /* FavoriteRecipesTests */,
 				3A37DFE702393E0FA6C8BBC2 /* FavoriteRecipesShare */,
+				8A67639F74080F56C5AA328F /* FavoriteRecipesUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -262,9 +312,23 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		53C9EFC6D892AA68BFCC8C92 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		01F40072E3CF347862554017 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		2CE424B13069A69600D3D8C6 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -293,6 +357,11 @@
 			isa = PBXTargetDependency;
 			target = 3A37DFE702393E0FA6C8BBC2 /* FavoriteRecipesShare */;
 			targetProxy = D7450C847008FD8A42518AA1 /* PBXContainerItemProxy */;
+		};
+		CCD8099EE02CAB83BB43E451 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2CF4453A2F65AA5D009DE620 /* FavoriteRecipes */;
+			targetProxy = E99F73F289509DDDC3EBFFC5 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -582,6 +651,30 @@
 			};
 			name = Debug;
 		};
+		4FC2D031C41885221C25F6AA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = WS7XMU4939;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "de.marcus-deuss.FavoriteRecipesUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = FavoriteRecipes;
+			};
+			name = Debug;
+		};
 		531B53A829A58820D8D01370 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -609,6 +702,30 @@
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		F76FDC6C369AAD6B68B75B48 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = WS7XMU4939;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "de.marcus-deuss.FavoriteRecipesUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = FavoriteRecipes;
 			};
 			name = Release;
 		};
@@ -647,6 +764,15 @@
 			buildConfigurations = (
 				36702EAD50B5B6386984383D /* Debug */,
 				531B53A829A58820D8D01370 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		8344B16103485A1C292BE01E /* Build configuration list for PBXNativeTarget "FavoriteRecipesUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4FC2D031C41885221C25F6AA /* Debug */,
+				F76FDC6C369AAD6B68B75B48 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

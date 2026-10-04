@@ -25,7 +25,7 @@ struct PageIndicatorView: View {
                 }
             }
         }
-        .padding(.vertical, 4)
+        .frame(minHeight: 44)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(.recipes))
         .accessibilityValue(Text(.pageIndicator(current + 1, count)))

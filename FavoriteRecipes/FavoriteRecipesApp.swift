@@ -10,12 +10,18 @@ struct FavoriteRecipesApp: App {
     let sharedModelContainer: ModelContainer
     @State private var navigation: AppNavigation
     @State private var undoDelete = UndoDeleteModel()
-    @State private var timerCenter = TimerCenter()
+    @State private var timerCenter = TimerCenter(
+        notifier: UITestSupport.isActive ? SilentTimerNotifier() : LocalTimerNotifier()
+    )
 
     init() {
         let schema = Schema([Recipe.self])
-        if let container = ModelContainer.make(schema: schema) {
-            sharedModelContainer = container
+        if UITestSupport.isActive { UITestSupport.prepareDefaults() }
+        let preparedContainer = UITestSupport.isActive
+            ? UITestSupport.makeContainer(schema: schema)
+            : ModelContainer.make(schema: schema)
+        if let preparedContainer {
+            sharedModelContainer = preparedContainer
         } else {
             // An in-memory store is the last resort; there is nothing left to fall back to.
             // swiftlint:disable:next force_try

@@ -77,6 +77,7 @@ struct RecipeDetailView: View {
                         } label: {
                             Label(.deleteRecipe, systemImage: "trash")
                         }
+                        .accessibilityIdentifier("editor.delete")
                     }
                 }
             }
@@ -86,14 +87,17 @@ struct RecipeDetailView: View {
                 if isNew {
                     ToolbarItem(placement: .cancellationAction) {
                         Button(.cancel, action: cancelDraft)
+                            .accessibilityIdentifier("editor.cancel")
                     }
                     ToolbarItem(placement: .confirmationAction) {
                         Button(.add, action: addDraft)
                             .disabled(!recipe.hasContent)
+                            .accessibilityIdentifier("editor.add")
                     }
                 } else {
                     ToolbarItem(placement: .confirmationAction) {
                         Button(.done) { dismiss() }
+                            .accessibilityIdentifier("editor.done")
                     }
                 }
             }

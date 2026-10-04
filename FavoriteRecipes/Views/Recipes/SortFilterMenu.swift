@@ -10,7 +10,9 @@ struct SortFilterMenu: View {
             Section(.sortBy) {
                 Picker(.sortBy, selection: $filter.sort) {
                     ForEach(RecipeSort.allCases) { sort in
-                        Label(sort.localizedName, systemImage: sort.icon).tag(sort)
+                        Label(sort.localizedName, systemImage: sort.icon)
+                            .tag(sort)
+                            .accessibilityIdentifier("sort.\(sort.rawValue)")
                     }
                 }
                 .pickerStyle(.inline)
@@ -21,6 +23,7 @@ struct SortFilterMenu: View {
                     Text(.anyRating).tag(0)
                     ForEach(1...5, id: \.self) { stars in
                         Text(.ratingAtLeast(stars)).tag(stars)
+                        .accessibilityIdentifier("minimumRating.\(stars)")
                     }
                 }
                 .pickerStyle(.inline)
@@ -32,6 +35,7 @@ struct SortFilterMenu: View {
                         Text(.anyTag).tag(String?.none)
                         ForEach(availableTags, id: \.self) { tag in
                             Text(tag).tag(String?.some(tag))
+                            .accessibilityIdentifier("tagFilter.\(tag)")
                         }
                     }
                     .pickerStyle(.inline)
@@ -43,12 +47,15 @@ struct SortFilterMenu: View {
                     filter.minimumRating = 0
                     filter.tag = nil
                 }
+                .accessibilityIdentifier("resetFilters")
             }
         } label: {
             Label(.sortAndFilter, systemImage: filter.hasExtraFilters
                   ? "line.3.horizontal.decrease.circle.fill"
                   : "line.3.horizontal.decrease.circle")
+            .frame(minWidth: 44, minHeight: 44)
         }
+        .accessibilityIdentifier("sortFilterMenu")
         .accessibilityValue(filter.hasExtraFilters ? Text(.filtersActive) : Text(verbatim: ""))
     }
 }

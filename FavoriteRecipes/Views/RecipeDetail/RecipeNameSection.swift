@@ -7,6 +7,7 @@ struct RecipeNameSection: View {
     var body: some View {
         Section {
             TextField(.recipeNamePlaceholder, text: $recipe.name)
+                .accessibilityIdentifier("recipeNameField")
                 .textInputAutocapitalization(.words)
                 .submitLabel(.done)
             LabeledContent(.rating) {

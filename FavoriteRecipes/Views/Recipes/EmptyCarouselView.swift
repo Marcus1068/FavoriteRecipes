@@ -29,6 +29,7 @@ struct EmptyCarouselView: View {
                     .foregroundStyle(.white)
                     .font(.headline)
             }
+            .accessibilityIdentifier("emptyAddButton")
         }
         .padding(40)
     }

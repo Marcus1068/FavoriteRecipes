@@ -27,11 +27,15 @@ struct ActiveTimerRow: View {
             Spacer()
             Button(.addMinute) { timerCenter.addMinute(to: timer) }
                 .buttonStyle(.bordered)
+                .accessibilityIdentifier("addMinuteButton")
             Button(isFinished ? .dismissTimer : .stopTimer, role: .destructive) {
                 timerCenter.remove(timer)
             }
             .buttonStyle(.bordered)
+            .accessibilityIdentifier("stopTimerButton")
         }
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("timerRow")
         .sensoryFeedback(.success, trigger: isFinished) { _, finished in finished }
     }
 }

@@ -29,6 +29,7 @@ struct CookingIngredientsList: View {
                     .font(.title3)
                 }
                 .buttonStyle(.plain)
+                .accessibilityIdentifier("ingredientRow")
                 .accessibilityValue(isChecked ? Text(.ingredientReady) : Text(verbatim: ""))
                 .accessibilityAddTraits(isChecked ? .isSelected : [])
             }

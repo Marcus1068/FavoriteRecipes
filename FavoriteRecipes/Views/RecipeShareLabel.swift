@@ -9,5 +9,8 @@ struct RecipeShareLabel: View {
             .padding(.vertical, 8)
             .background(.ultraThinMaterial, in: .capsule)
             .foregroundStyle(.white)
+            // The capsule stays small; the tappable area reaches the 44 pt minimum.
+            .frame(minHeight: 44)
+            .contentShape(.rect)
     }
 }

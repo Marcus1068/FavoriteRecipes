@@ -22,6 +22,7 @@ struct StepTimerButtons: View {
                     .buttonBorderShape(.capsule)
                     .controlSize(.large)
                     .accessibilityLabel(Text(.startTimerLabel(length)))
+                    .accessibilityIdentifier("startTimerButton")
                 }
             }
             .padding(.horizontal)
