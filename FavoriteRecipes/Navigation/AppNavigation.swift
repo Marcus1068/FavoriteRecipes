@@ -8,6 +8,9 @@ import Observation
 final class AppNavigation {
     var selectedTab: AppTab = .recipes
 
+    /// Whether the introduction sheet is showing.
+    var isShowingOnboarding = false
+
     /// A recipe that should be shown as soon as the recipes screen can handle it.
     private(set) var pendingRecipeID: UUID?
 

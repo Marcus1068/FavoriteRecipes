@@ -3,6 +3,7 @@ import SwiftData
 
 struct OptionsView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(AppNavigation.self) private var navigation
     @Query private var recipes: [Recipe]
 
     @State private var showConfirmGenerate = false
@@ -24,6 +25,13 @@ struct OptionsView: View {
                     Label(.inspireMe, systemImage: "sparkles")
                 } footer: {
                     Text(.inspireMeFooter)
+                }
+
+                // MARK: Introduction
+                Section {
+                    Button(.showOnboarding, systemImage: "questionmark.circle") {
+                        navigation.isShowingOnboarding = true
+                    }
                 }
 
                 // MARK: Sample Data (developer tool: needs sample images in the asset catalog)

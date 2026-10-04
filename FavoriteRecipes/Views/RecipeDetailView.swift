@@ -34,6 +34,9 @@ struct RecipeDetailView: View {
                     onTakePhoto: { showRecipeCamera = true }
                 )
                 RecipeNameSection(recipe: recipe)
+                if RecipeAssistant.isAvailable && recipe.hasContent {
+                    RecipeCleanupSection(recipe: recipe)
+                }
                 RecipeCategorySection(recipe: recipe)
                 RecipeDetailsSection(recipe: recipe)
                 RecipeIngredientsSection(
