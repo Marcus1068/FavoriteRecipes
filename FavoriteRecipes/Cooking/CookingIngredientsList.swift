@@ -24,10 +24,12 @@ struct CookingIngredientsList: View {
                     } icon: {
                         Image(systemName: isChecked ? "checkmark.circle.fill" : "circle")
                             .foregroundStyle(isChecked ? Color.accentColor : .secondary)
+                            .accessibilityHidden(true)
                     }
                     .font(.title3)
                 }
                 .buttonStyle(.plain)
+                .accessibilityValue(isChecked ? Text(.ingredientReady) : Text(verbatim: ""))
                 .accessibilityAddTraits(isChecked ? .isSelected : [])
             }
             .sensoryFeedback(.selection, trigger: model.checkedIngredients)

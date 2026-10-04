@@ -15,6 +15,7 @@ struct RecipePhotoSection: View {
                     .frame(maxHeight: 200)
                     .clipShape(.rect(cornerRadius: 12))
                     .frame(maxWidth: .infinity)
+                    .accessibilityLabel(Text(.recipePhoto))
                 Button(role: .destructive) {
                     recipe.recipeImageData = nil
                 } label: {

@@ -15,6 +15,7 @@ struct RecipeListRow: View {
                         Text(recipe.category.localizedName)
                     } icon: {
                         Text(recipe.category.icon)
+                            .accessibilityHidden(true)
                     }
                     .font(.subheadline)
                     .foregroundStyle(.secondary)

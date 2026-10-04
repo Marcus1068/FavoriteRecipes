@@ -161,6 +161,11 @@ struct RecipesView: View {
             // Requests from Siri, Shortcuts and Spotlight.
             .onChange(of: navigation.pendingRecipeID) { showPendingRecipe() }
             .onChange(of: navigation.requestedAction) { performRequestedAction() }
+            .onChange(of: navigation.presentedCount) {
+                // Something was closed: pick up a request that was waiting for it.
+                showPendingRecipe()
+                performRequestedAction()
+            }
             .task {
                 showPendingRecipe()
                 performRequestedAction()
@@ -207,6 +212,8 @@ struct RecipesView: View {
 
     /// Handles menu commands and import links.
     private func performRequestedAction() {
+        // Wait until open editors have closed; they close themselves when a request arrives.
+        guard navigation.canPresent else { return }
         switch navigation.consumeRequestedAction() {
         case .newRecipe:
             addNewRecipe()
@@ -219,6 +226,7 @@ struct RecipesView: View {
     }
 
     private func showPendingRecipe() {
+        guard navigation.canPresent else { return }
         guard let id = navigation.consumePendingRecipe(),
               let recipe = allRecipes.first(where: { $0.id == id })
         else { return }

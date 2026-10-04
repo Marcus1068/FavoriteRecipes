@@ -15,3 +15,39 @@ struct AppNavigationTests {
         #expect(navigation.consumePendingRecipe() == nil)
     }
 }
+
+@MainActor
+struct PresentationCountTests {
+    @Test func startsWithNothingPresented() {
+        #expect(AppNavigation().canPresent)
+    }
+
+    @Test func tracksNestedPresentations() {
+        let navigation = AppNavigation()
+        navigation.presentationStarted()
+        navigation.presentationStarted()
+        #expect(!navigation.canPresent)
+        navigation.presentationEnded()
+        #expect(!navigation.canPresent)
+        navigation.presentationEnded()
+        #expect(navigation.canPresent)
+    }
+
+    @Test func extraEndsNeverGoNegative() {
+        let navigation = AppNavigation()
+        navigation.presentationEnded()
+        navigation.presentationStarted()
+        #expect(!navigation.canPresent)
+        #expect(navigation.presentedCount == 1)
+    }
+
+    @Test func aRequestStaysPendingUntilConsumed() {
+        let navigation = AppNavigation()
+        navigation.presentationStarted()
+        navigation.request(.newRecipe)
+        #expect(navigation.requestedAction == .newRecipe)
+        #expect(!navigation.canPresent)
+        navigation.presentationEnded()
+        #expect(navigation.consumeRequestedAction() == .newRecipe)
+    }
+}

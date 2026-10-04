@@ -5,6 +5,7 @@ struct RecipeCardInfoStrip: View {
     @Bindable var recipe: Recipe
     let onEdit: () -> Void
     let onCook: () -> Void
+    let onDuplicate: () -> Void
     let onDelete: (() -> Void)?
 
     var body: some View {
@@ -26,6 +27,7 @@ struct RecipeCardInfoStrip: View {
                 }
                 .accessibilityAction(named: Text(.editRecipe), onEdit)
                 .accessibilityAction(named: Text(.cookingMode), onCook)
+                .accessibilityAction(named: Text(.duplicate), onDuplicate)
                 .accessibilityActions {
                     if let onDelete {
                         Button(.deleteRecipe, role: .destructive, action: onDelete)

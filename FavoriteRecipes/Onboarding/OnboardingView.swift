@@ -45,6 +45,7 @@ struct OnboardingView: View {
                 .background(.bar)
         }
         .interactiveDismissDisabled()
+        .tracksPresentation(isProtected: true)
     }
 }
 

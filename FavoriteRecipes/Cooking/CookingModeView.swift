@@ -62,5 +62,6 @@ struct CookingModeView: View {
             }
         }
         .keepScreenAwake()
+        .tracksPresentation()
     }
 }

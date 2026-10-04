@@ -66,6 +66,7 @@ struct ImportRecipeView: View {
                 // An address from an import link starts the import right away.
                 if model.canImport { runImport() }
             }
+            .tracksPresentation()
             .navigationTitle(.importFromWeb)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

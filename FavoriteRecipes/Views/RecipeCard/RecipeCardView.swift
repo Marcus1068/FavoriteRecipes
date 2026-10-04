@@ -26,6 +26,8 @@ struct RecipeCardView: View {
 
     @State private var showDetail = false
     @State private var cookingRecipe: Recipe?
+    @State private var copyToEdit: Recipe?
+    @Environment(\.modelContext) private var modelContext
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -39,6 +41,7 @@ struct RecipeCardView: View {
                 recipe: recipe,
                 onEdit: { showDetail = true },
                 onCook: { cookingRecipe = recipe },
+                onDuplicate: { copyToEdit = recipe.duplicate(in: modelContext) },
                 onDelete: onDelete
             )
         }
@@ -46,6 +49,7 @@ struct RecipeCardView: View {
         .clipShape(.rect(cornerRadius: 24))
         .sheet(isPresented: $showDetail) { RecipeDetailView(recipe: recipe) }
         .cookingModeCover(item: $cookingRecipe)
+        .sheet(item: $copyToEdit) { copy in RecipeDetailView(recipe: copy) }
     }
 }
 

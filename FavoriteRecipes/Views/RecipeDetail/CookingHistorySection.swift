@@ -26,6 +26,7 @@ struct CookingHistorySection: View {
                             .foregroundStyle(.secondary)
                     }
                 }
+                .accessibilityElement(children: .combine)
                 .swipeActions {
                     Button(.delete, systemImage: "trash", role: .destructive) {
                         recipe.removeCookEntry(entry)

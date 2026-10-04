@@ -24,7 +24,7 @@ struct RecipeTagsSection: View {
                             .buttonStyle(.bordered)
                             .buttonBorderShape(.capsule)
                             .controlSize(.small)
-                            .accessibilityHint(Text(.removeTagHint))
+                            .accessibilityLabel(Text(.removeTagLabel(tag)))
                     }
                 }
             }
@@ -42,6 +42,7 @@ struct RecipeTagsSection: View {
                             .buttonStyle(.bordered)
                             .buttonBorderShape(.capsule)
                             .controlSize(.small)
+                            .accessibilityLabel(Text(.addTagLabel(tag)))
                     }
                 }
             }

@@ -14,6 +14,21 @@ final class AppNavigation {
     /// A recipe that should be shown as soon as the recipes screen can handle it.
     private(set) var pendingRecipeID: UUID?
 
+    /// How many editors, cooking screens and similar screens are open right now.
+    /// The recipes screen waits for this to reach zero before it presents something new,
+    /// because a screen cannot present a second sheet over an open one.
+    private(set) var presentedCount = 0
+
+    var canPresent: Bool { presentedCount == 0 }
+
+    func presentationStarted() {
+        presentedCount += 1
+    }
+
+    func presentationEnded() {
+        presentedCount = max(0, presentedCount - 1)
+    }
+
     /// An action for the recipes screen, e.g. from a menu command or an import link.
     private(set) var requestedAction: AppAction?
 

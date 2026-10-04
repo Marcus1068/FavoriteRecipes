@@ -2166,23 +2166,6 @@
         }
       }
     },
-    "removeTagHint": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Entfernt diesen Tag"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Removes this tag"
-          }
-        }
-      }
-    },
     "cookedOn": {
       "extractionState": "manual",
       "localizations": {
@@ -2451,6 +2434,91 @@
           "stringUnit": {
             "state": "translated",
             "value": "Create Draft from Text"
+          }
+        }
+      }
+    },
+    "ingredientsPhotoLabel": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Foto der Zutaten"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Photo of the ingredients"
+          }
+        }
+      }
+    },
+    "ingredientReady": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bereit"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ready"
+          }
+        }
+      }
+    },
+    "removeTagLabel": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tag %@ entfernen"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove tag %@"
+          }
+        }
+      }
+    },
+    "addTagLabel": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tag %@ hinzufügen"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add tag %@"
+          }
+        }
+      }
+    },
+    "filtersActive": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Filter aktiv"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Filters active"
           }
         }
       }

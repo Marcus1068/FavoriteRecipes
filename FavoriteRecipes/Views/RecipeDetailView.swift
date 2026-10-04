@@ -99,6 +99,7 @@ struct RecipeDetailView: View {
             }
             // Swiping a draft away would silently lose what was entered.
             .interactiveDismissDisabled(isNew && recipe.hasContent)
+            .tracksPresentation(isProtected: isNew && recipe.hasContent)
             .confirmationDialog(
                 Text(.discardRecipeConfirmTitle),
                 isPresented: $showDiscardConfirmation,

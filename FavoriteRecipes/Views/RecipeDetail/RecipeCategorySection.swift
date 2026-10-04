@@ -10,6 +10,7 @@ struct RecipeCategorySection: View {
                 ForEach(RecipeCategory.allCases) { cat in
                     HStack {
                         Text(cat.icon)
+                            .accessibilityHidden(true)
                         Text(cat.localizedName)
                     }
                     .tag(cat)
