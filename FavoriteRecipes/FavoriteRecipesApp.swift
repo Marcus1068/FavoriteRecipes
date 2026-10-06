@@ -10,6 +10,7 @@ struct FavoriteRecipesApp: App {
     let sharedModelContainer: ModelContainer
     @State private var navigation: AppNavigation
     @State private var undoDelete = UndoDeleteModel()
+    @State private var shoppingStore: ShoppingStore
     @State private var timerCenter = UITestSupport.isActive
         ? TimerCenter(notifier: SilentTimerNotifier(), activities: NoTimerActivities())
         : TimerCenter()
@@ -31,6 +32,8 @@ struct FavoriteRecipesApp: App {
             )
         }
 
+        _shoppingStore = State(initialValue: UITestSupport.isActive ? UITestSupport.makeShoppingStore() : ShoppingStore())
+
         // App Intents (Siri, Shortcuts, Spotlight) use the same store and navigation as the UI.
         let container = sharedModelContainer
         let navigation = AppNavigation()
@@ -44,6 +47,7 @@ struct FavoriteRecipesApp: App {
             ContentView()
                 .environment(navigation)
                 .environment(undoDelete)
+                .environment(shoppingStore)
                 .environment(timerCenter)
         }
         .modelContainer(sharedModelContainer)

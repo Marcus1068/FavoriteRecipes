@@ -6,7 +6,7 @@ struct RecipeCleanupResponse {
     @Guide(description: "The recipe title with typos and stray text removed; unchanged if it is already fine")
     var name: String
 
-    @Guide(description: "The ingredient lines with spelling mistakes fixed, one entry per input line, in the same order")
+    @Guide(description: "The ingredient lines with spelling mistakes fixed, one entry per input line, in the same order, each still starting with its amount and unit")
     var ingredients: [String]
 
     @Guide(description: "The preparation lines with spelling mistakes fixed, one entry per input line, in the same order")

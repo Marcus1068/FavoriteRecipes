@@ -77,7 +77,7 @@ final class AccessibilityAuditUITests: AppUITestCase {
     }
 
     func testOptions() throws {
-        app.tabBars.buttons.element(boundBy: 1).tap()
+        app.tabBars.buttons["Options"].tap()
         expectExists(app.switches.firstMatch, "Options should show its settings")
         try audit("options", for: enforcedTypes)
     }
@@ -103,7 +103,7 @@ final class AccessibilityAuditUITests: AppUITestCase {
 
     /// One label in the statistics of Options does not follow the text size.
     func testKnownFindingDynamicTypeInOptions() throws {
-        app.tabBars.buttons.element(boundBy: 1).tap()
+        app.tabBars.buttons["Options"].tap()
         expectExists(app.switches.firstMatch, "Options should show its settings")
         try knownFinding("The Favorites label in the statistics is reported as not scaling") {
             try audit("options dynamic type", for: .dynamicType)

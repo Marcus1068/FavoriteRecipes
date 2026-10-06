@@ -10,6 +10,7 @@ struct RecipeListView: View {
 
     @Environment(\.modelContext) private var modelContext
     @Environment(UndoDeleteModel.self) private var undoDelete
+    @Environment(ShoppingStore.self) private var shoppingStore
     @State private var recipeToEdit: Recipe?
     @State private var recipeToCook: Recipe?
     @State private var recipeToDelete: Recipe?
@@ -39,6 +40,7 @@ struct RecipeListView: View {
                             systemImage: recipe.isFavorite ? "heart.slash" : "heart"
                         ) { recipe.isFavorite.toggle() }
                         Button(.cookingMode, systemImage: "frying.pan") { recipeToCook = recipe }
+                        Button(.addToShoppingList, systemImage: "cart.badge.plus") { shoppingStore.add(recipe.shoppingRecipe) }
                         Button(.editRecipe, systemImage: "pencil") { recipeToEdit = recipe }
                         Button(.duplicate, systemImage: "plus.square.on.square") {
                             recipeToEdit = recipe.duplicate(in: modelContext)

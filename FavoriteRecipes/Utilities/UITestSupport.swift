@@ -17,7 +17,15 @@ enum UITestSupport {
         let defaults = UserDefaults.standard
         defaults.set(!showsOnboarding, forKey: "hasSeenOnboarding")
         defaults.removeObject(forKey: "recipeSort")
+        defaults.removeObject(forKey: "unitSystem")
         defaults.set(false, forKey: "inspireMeIncludesFavorites")
+    }
+
+    /// A shopping list that starts empty and is kept apart from the real one.
+    static func makeShoppingStore() -> ShoppingStore {
+        let defaults = UserDefaults(suiteName: "ui-testing") ?? .standard
+        defaults.removePersistentDomain(forName: "ui-testing")
+        return ShoppingStore(defaults: defaults)
     }
 
     static func makeContainer(schema: Schema) -> ModelContainer? {
@@ -37,6 +45,7 @@ enum UITestSupport {
         let carbonara = Recipe(name: "Carbonara", category: .noodles)
         carbonara.createdAt = now
         carbonara.rating = 4
+        carbonara.servings = 4
         carbonara.tags = ["weeknight"]
         carbonara.ingredientsText = "400 g spaghetti\n150 g guanciale\n4 egg yolks"
         carbonara.instructions = "1. Boil the pasta\n2. Fry the guanciale for 10 minutes\n3. Mix everything"
@@ -45,7 +54,7 @@ enum UITestSupport {
         pie.createdAt = now.addingTimeInterval(-86_400)
         pie.rating = 5
         pie.tags = ["baking"]
-        pie.ingredientsText = "6 apples\n200 g flour"
+        pie.ingredientsText = "6 apples\n200 g flour\n2 egg yolks"
         pie.instructions = "1. Peel the apples\n2. Bake for 45 minutes"
 
         let risotto = Recipe(name: "Mushroom Risotto", category: .vegetarian)

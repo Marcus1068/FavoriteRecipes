@@ -5,6 +5,7 @@ struct ContentView: View {
     @Environment(AppNavigation.self) private var navigation
     @Environment(UndoDeleteModel.self) private var undoDelete
     @Environment(TimerCenter.self) private var timerCenter
+    @Environment(ShoppingStore.self) private var shoppingStore
     @Environment(\.modelContext) private var modelContext
     @AppStorage("hasSeenOnboarding") private var hasSeenOnboarding = false
 
@@ -14,6 +15,9 @@ struct ContentView: View {
             Tab(.recipes, systemImage: "fork.knife", value: AppTab.recipes) {
                 RecipesView()
             }
+            Tab(.shopping, systemImage: "cart", value: AppTab.shopping) {
+                ShoppingListView()
+            }
             Tab(.options, systemImage: "gear", value: AppTab.options) {
                 OptionsView()
             }
@@ -22,6 +26,7 @@ struct ContentView: View {
             }
         }
         .overlay { UndoDeleteBanner(model: undoDelete) }
+        .overlay { ShoppingAddedBanner(store: shoppingStore) }
         .sheet(isPresented: $navigation.isShowingOnboarding, onDismiss: { hasSeenOnboarding = true }) {
             OnboardingView()
         }

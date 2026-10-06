@@ -13,6 +13,23 @@
         }
       }
     },
+    "NSRemindersFullAccessUsageDescription" : {
+      "comment" : "Privacy - Reminders Full Access Usage Description",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "FavoriteRecipes fügt die Einträge deiner Einkaufsliste zu einer eigenen Liste in Erinnerungen hinzu. Deine anderen Erinnerungen werden nicht gelesen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "FavoriteRecipes adds your shopping list items to a Reminders list of its own. It does not read your other reminders."
+          }
+        }
+      }
+    },
     "NSCameraUsageDescription" : {
       "comment" : "Privacy - Camera Usage Description",
       "localizations" : {

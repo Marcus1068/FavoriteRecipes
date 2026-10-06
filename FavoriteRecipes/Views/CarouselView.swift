@@ -26,6 +26,7 @@ struct CarouselView: View {
 
     @Environment(\.modelContext) private var modelContext
     @Environment(UndoDeleteModel.self) private var undoDelete
+    @Environment(ShoppingStore.self) private var shoppingStore
     @Environment(\.horizontalSizeClass) private var hSizeClass
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @GestureState private var dragOffset: CGFloat = 0
@@ -135,6 +136,11 @@ struct CarouselView: View {
                         Label(.cookingMode, systemImage: "frying.pan")
                     }
                     .accessibilityIdentifier("menu.cook")
+
+                    Button { shoppingStore.add(recipe.shoppingRecipe) } label: {
+                        Label(.addToShoppingList, systemImage: "cart.badge.plus")
+                    }
+                    .accessibilityIdentifier("menu.shopping")
 
                     Button { recipeToEdit = recipe } label: {
                         Label(.editRecipe, systemImage: "pencil")
