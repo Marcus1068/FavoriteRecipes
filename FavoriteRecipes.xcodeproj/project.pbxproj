@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		39DA0A61353314B90D4BDCC7 /* FavoriteRecipesShare.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A299E490BBED2CF3DFC8DF07 /* FavoriteRecipesShare.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		FADE2925FD81B34BF7E8DF33 /* FavoriteRecipesWidgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = E18A0A5ABCCA95BF8E2F8559 /* FavoriteRecipesWidgets.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -25,6 +26,13 @@
 			remoteGlobalIDString = 2CF4453A2F65AA5D009DE620;
 			remoteInfo = FavoriteRecipes;
 		};
+		8C92637E64B6BA0865EF5AA3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2CF445332F65AA5D009DE620 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D40CCA85F0F54F30445A3577;
+			remoteInfo = FavoriteRecipesWidgets;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -35,6 +43,7 @@
 			dstSubfolderSpec = 13;
 			files = (
 				39DA0A61353314B90D4BDCC7 /* FavoriteRecipesShare.appex in Embed Foundation Extensions */,
+				FADE2925FD81B34BF7E8DF33 /* FavoriteRecipesWidgets.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -46,6 +55,7 @@
 		2CF4453B2F65AA5D009DE620 /* FavoriteRecipes.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FavoriteRecipes.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		676226E236A23E238E3B1C77 /* FavoriteRecipesUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FavoriteRecipesUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A299E490BBED2CF3DFC8DF07 /* FavoriteRecipesShare.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = FavoriteRecipesShare.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		E18A0A5ABCCA95BF8E2F8559 /* FavoriteRecipesWidgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = FavoriteRecipesWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -62,6 +72,13 @@
 				Info.plist,
 			);
 			target = 3A37DFE702393E0FA6C8BBC2 /* FavoriteRecipesShare */;
+		};
+		40051E467AB4A36EE0987B35 /* Exceptions for "FavoriteRecipesWidgets" folder in "FavoriteRecipesWidgets" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = D40CCA85F0F54F30445A3577 /* FavoriteRecipesWidgets */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -90,6 +107,19 @@
 		FC4C011F1BD38F1F34920FBD /* FavoriteRecipesUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = FavoriteRecipesUITests;
+			sourceTree = "<group>";
+		};
+		F823CDEF7F73EDD77B6C2916 /* FavoriteRecipesWidgets */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				40051E467AB4A36EE0987B35 /* Exceptions for "FavoriteRecipesWidgets" folder in "FavoriteRecipesWidgets" target */,
+			);
+			path = FavoriteRecipesWidgets;
+			sourceTree = "<group>";
+		};
+		3D00D68DF6DB75D0C3F7EB93 /* Shared */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Shared;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -123,6 +153,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		19CD5840F1AEC544AD77BF39 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -131,6 +168,8 @@
 			children = (
 				2CF4453D2F65AA5D009DE620 /* FavoriteRecipes */,
 				2CE424B63069A69600D3D8C6 /* FavoriteRecipesTests */,
+				F823CDEF7F73EDD77B6C2916 /* FavoriteRecipesWidgets */,
+				3D00D68DF6DB75D0C3F7EB93 /* Shared */,
 				FC4C011F1BD38F1F34920FBD /* FavoriteRecipesUITests */,
 				413DF4F73EF8C9FCD698014E /* FavoriteRecipesShare */,
 				2CF4453C2F65AA5D009DE620 /* Products */,
@@ -142,6 +181,7 @@
 			children = (
 				2CF4453B2F65AA5D009DE620 /* FavoriteRecipes.app */,
 				2CE424B53069A69600D3D8C6 /* FavoriteRecipesTests.xctest */,
+				E18A0A5ABCCA95BF8E2F8559 /* FavoriteRecipesWidgets.appex */,
 				676226E236A23E238E3B1C77 /* FavoriteRecipesUITests.xctest */,
 				A299E490BBED2CF3DFC8DF07 /* FavoriteRecipesShare.appex */,
 			);
@@ -186,9 +226,11 @@
 			);
 			dependencies = (
 				07F174CB78A6BBEEF965D4F0 /* PBXTargetDependency */,
+				70E2E30BDB0E7AB8D7E349EF /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				2CF4453D2F65AA5D009DE620 /* FavoriteRecipes */,
+				3D00D68DF6DB75D0C3F7EB93 /* Shared */,
 			);
 			name = FavoriteRecipes;
 			packageProductDependencies = (
@@ -242,6 +284,29 @@
 			productReference = 676226E236A23E238E3B1C77 /* FavoriteRecipesUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
+		D40CCA85F0F54F30445A3577 /* FavoriteRecipesWidgets */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C481EE214E69886DD9078D3F /* Build configuration list for PBXNativeTarget "FavoriteRecipesWidgets" */;
+			buildPhases = (
+				44242B30E58D656EC4F3378C /* Sources */,
+				19CD5840F1AEC544AD77BF39 /* Frameworks */,
+				768915E2ED4A22437740AF0D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				F823CDEF7F73EDD77B6C2916 /* FavoriteRecipesWidgets */,
+				3D00D68DF6DB75D0C3F7EB93 /* Shared */,
+			);
+			name = FavoriteRecipesWidgets;
+			packageProductDependencies = (
+			);
+			productName = FavoriteRecipesWidgets;
+			productReference = E18A0A5ABCCA95BF8E2F8559 /* FavoriteRecipesWidgets.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -257,6 +322,9 @@
 					};
 					2CF4453A2F65AA5D009DE620 = {
 						CreatedOnToolsVersion = 26.3;
+					};
+					D40CCA85F0F54F30445A3577 = {
+						CreatedOnToolsVersion = 27.0;
 					};
 					3A37DFE702393E0FA6C8BBC2 = {
 						CreatedOnToolsVersion = 27.0;
@@ -286,6 +354,7 @@
 				2CE424B43069A69600D3D8C6 /* FavoriteRecipesTests */,
 				3A37DFE702393E0FA6C8BBC2 /* FavoriteRecipesShare */,
 				8A67639F74080F56C5AA328F /* FavoriteRecipesUITests */,
+				D40CCA85F0F54F30445A3577 /* FavoriteRecipesWidgets */,
 			);
 		};
 /* End PBXProject section */
@@ -313,6 +382,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		53C9EFC6D892AA68BFCC8C92 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		768915E2ED4A22437740AF0D /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -350,6 +426,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		44242B30E58D656EC4F3378C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -362,6 +445,12 @@
 			isa = PBXTargetDependency;
 			target = 2CF4453A2F65AA5D009DE620 /* FavoriteRecipes */;
 			targetProxy = E99F73F289509DDDC3EBFFC5 /* PBXContainerItemProxy */;
+		};
+		70E2E30BDB0E7AB8D7E349EF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			platformFilter = ios;
+			target = D40CCA85F0F54F30445A3577 /* FavoriteRecipesWidgets */;
+			targetProxy = 8C92637E64B6BA0865EF5AA3 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -729,6 +818,68 @@
 			};
 			name = Release;
 		};
+		E0A0887BEE1AFBFA45289E00 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = WS7XMU4939;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = FavoriteRecipesWidgets/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = FavoriteRecipes;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "de.marcus-deuss.FavoriteRecipes.Widgets";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		82C358452358902FF3177E7E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = WS7XMU4939;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = FavoriteRecipesWidgets/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = FavoriteRecipes;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "de.marcus-deuss.FavoriteRecipes.Widgets";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -773,6 +924,15 @@
 			buildConfigurations = (
 				4FC2D031C41885221C25F6AA /* Debug */,
 				F76FDC6C369AAD6B68B75B48 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C481EE214E69886DD9078D3F /* Build configuration list for PBXNativeTarget "FavoriteRecipesWidgets" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E0A0887BEE1AFBFA45289E00 /* Debug */,
+				82C358452358902FF3177E7E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

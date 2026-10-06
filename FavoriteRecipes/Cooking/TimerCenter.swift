@@ -11,21 +11,32 @@ final class TimerCenter {
     private(set) var finishedIDs: Set<UUID> = []
 
     private let notifier: any TimerNotifying
+    private let activities: any TimerActivityManaging
     private let now: () -> Date
     private let wait: (Duration) async -> Void
     private var waiters: [UUID: Task<Void, Never>] = [:]
+    /// Timers that already have a Live Activity, so a change updates it instead of starting another.
+    private var hasStartedActivity: Set<UUID> = []
 
     init(
         notifier: any TimerNotifying = LocalTimerNotifier(),
+        activities: any TimerActivityManaging = NoTimerActivities.platformDefault,
         now: @escaping () -> Date = { .now },
         wait: @escaping (Duration) async -> Void = { try? await Task.sleep(for: $0) }
     ) {
         self.notifier = notifier
+        self.activities = activities
         self.now = now
         self.wait = wait
     }
 
     var hasTimers: Bool { !timers.isEmpty }
+
+    /// Call once when the app starts: ends Live Activities that belong to timers of an earlier launch.
+    func cleanUpLeftoverActivities() {
+        let activities = activities
+        Task { await activities.endOrphans() }
+    }
 
     func isFinished(_ timer: CookingTimer) -> Bool {
         finishedIDs.contains(timer.id)
@@ -53,16 +64,32 @@ final class TimerCenter {
     func remove(_ timer: CookingTimer) {
         waiters[timer.id]?.cancel()
         waiters[timer.id] = nil
+        hasStartedActivity.remove(timer.id)
         timers.removeAll { $0.id == timer.id }
         finishedIDs.remove(timer.id)
         let notifier = notifier
-        Task { await notifier.cancel(id: timer.id) }
+        let activities = activities
+        Task {
+            await notifier.cancel(id: timer.id)
+            await activities.end(id: timer.id)
+        }
     }
 
     private func schedule(_ timer: CookingTimer) {
         waiters[timer.id]?.cancel()
         let notifier = notifier
-        Task { await notifier.schedule(id: timer.id, title: timer.title, endDate: timer.endDate) }
+        let activities = activities
+        // A timer that already has a Live Activity is updated, not started again.
+        let isRestart = hasStartedActivity.contains(timer.id)
+        Task {
+            await notifier.schedule(id: timer.id, title: timer.title, endDate: timer.endDate)
+            if isRestart {
+                await activities.update(id: timer.id, endDate: timer.endDate, isFinished: false)
+            } else {
+                await activities.start(id: timer.id, title: timer.title, endDate: timer.endDate)
+            }
+        }
+        hasStartedActivity.insert(timer.id)
 
         let remaining = max(0, timer.endDate.timeIntervalSince(now()))
         waiters[timer.id] = Task { [weak self, wait] in
@@ -76,5 +103,9 @@ final class TimerCenter {
         guard timers.contains(where: { $0.id == id }) else { return }
         finishedIDs.insert(id)
         waiters[id] = nil
+        if let timer = timers.first(where: { $0.id == id }) {
+            let activities = activities
+            Task { await activities.update(id: id, endDate: timer.endDate, isFinished: true) }
+        }
     }
 }

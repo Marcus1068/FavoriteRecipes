@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Shares a recipe as text, with its photo as the share sheet preview.
+/// Shares a recipe as text or as a recipe file, with its photo as the share sheet preview.
 struct RecipeShareButton: View {
     let recipe: Recipe
 
@@ -15,23 +15,22 @@ struct RecipeShareButton: View {
     }
 
     var body: some View {
-        if let uiImage = previewImage {
-            let image = Image(uiImage: uiImage)
-            ShareLink(
-                item: recipe.shareText,
-                subject: Text(recipe.displayName),
-                preview: SharePreview(recipe.displayName, image: image)
-            ) {
-                RecipeShareLabel()
+        let preview = SharePreview(
+            recipe.displayName,
+            image: previewImage.map(Image.init(uiImage:)) ?? Image(systemName: "fork.knife")
+        )
+        Menu {
+            ShareLink(item: recipe.shareText, subject: Text(recipe.displayName), preview: preview) {
+                Label(.shareAsText, systemImage: "text.alignleft")
             }
-        } else {
-            ShareLink(
-                item: recipe.shareText,
-                subject: Text(recipe.displayName),
-                preview: SharePreview(recipe.displayName)
-            ) {
-                RecipeShareLabel()
+            ShareLink(item: RecipeFileExport(file: RecipeFile(recipe)), preview: preview) {
+                Label(.shareAsRecipeFile, systemImage: "doc.badge.arrow.up")
             }
+            .accessibilityIdentifier("shareRecipeFile")
+        } label: {
+            RecipeShareLabel()
         }
+        .accessibilityLabel(Text(.share))
+        .accessibilityIdentifier("card.share")
     }
 }

@@ -10,9 +10,9 @@ struct FavoriteRecipesApp: App {
     let sharedModelContainer: ModelContainer
     @State private var navigation: AppNavigation
     @State private var undoDelete = UndoDeleteModel()
-    @State private var timerCenter = TimerCenter(
-        notifier: UITestSupport.isActive ? SilentTimerNotifier() : LocalTimerNotifier()
-    )
+    @State private var timerCenter = UITestSupport.isActive
+        ? TimerCenter(notifier: SilentTimerNotifier(), activities: NoTimerActivities())
+        : TimerCenter()
 
     init() {
         let schema = Schema([Recipe.self])

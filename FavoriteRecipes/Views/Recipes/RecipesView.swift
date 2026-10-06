@@ -19,6 +19,9 @@ struct RecipesView: View {
     /// A recipe opened from Spotlight, Siri or Inspire Me that isn't in the carousel.
     @State private var openedRecipe: Recipe?
     @State private var showImport = false
+    @State private var showFileImport = false
+    @State private var fileError: RecipeFile.ReadError?
+    @State private var showFileError = false
     /// Draft from the web import, shown once the import sheet has closed.
     @State private var importedDraft: Recipe?
 
@@ -148,6 +151,10 @@ struct RecipesView: View {
                             showImport = true
                         }
                         .accessibilityIdentifier("importButton")
+                        Button(.importFromFile, systemImage: "doc.badge.arrow.up") {
+                            showFileImport = true
+                        }
+                        .accessibilityIdentifier("importFileButton")
                     } label: {
                         Label(.addRecipe, systemImage: "plus.circle.fill")
                             .font(.title3)
@@ -155,6 +162,13 @@ struct RecipesView: View {
                     }
                     .accessibilityIdentifier("addMenu")
                 }
+            }
+            .fileImporter(isPresented: $showFileImport, allowedContentTypes: [.favoriteRecipe]) { result in
+                if case .success(let url) = result { openRecipeFile(url) }
+            }
+            .alert(.recipeFileErrorTitle, isPresented: $showFileError) {
+            } message: {
+                Text(fileError?.message ?? .recipeFileUnreadable)
             }
             .sheet(item: $newRecipe) { recipe in
                 RecipeDetailView(recipe: recipe, isNew: true)
@@ -224,11 +238,26 @@ struct RecipesView: View {
         switch navigation.consumeRequestedAction() {
         case .newRecipe:
             addNewRecipe()
+        case .openRecipeFile(let url):
+            openRecipeFile(url)
         case .importRecipe(let address):
             importAddress = address
             showImport = true
         case nil:
             break
+        }
+    }
+
+    /// Opens a shared recipe file as a draft to review before it is added.
+    private func openRecipeFile(_ url: URL) {
+        do {
+            newRecipe = try RecipeFile.read(from: url).makeDraft()
+        } catch let error as RecipeFile.ReadError {
+            fileError = error
+            showFileError = true
+        } catch {
+            fileError = .unreadable
+            showFileError = true
         }
     }
 

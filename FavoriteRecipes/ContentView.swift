@@ -4,6 +4,7 @@ import SwiftData
 struct ContentView: View {
     @Environment(AppNavigation.self) private var navigation
     @Environment(UndoDeleteModel.self) private var undoDelete
+    @Environment(TimerCenter.self) private var timerCenter
     @Environment(\.modelContext) private var modelContext
     @AppStorage("hasSeenOnboarding") private var hasSeenOnboarding = false
 
@@ -24,10 +25,15 @@ struct ContentView: View {
         .sheet(isPresented: $navigation.isShowingOnboarding, onDismiss: { hasSeenOnboarding = true }) {
             OnboardingView()
         }
-        .task { showOnboardingIfNeeded() }
+        .task {
+            showOnboardingIfNeeded()
+            timerCenter.cleanUpLeftoverActivities()
+        }
         .onOpenURL { url in
             if let address = ImportLink.recipeAddress(in: url) {
                 navigation.request(.importRecipe(address: address))
+            } else if url.isFileURL, url.pathExtension.lowercased() == "favoriterecipe" {
+                navigation.request(.openRecipeFile(url))
             }
         }
     }

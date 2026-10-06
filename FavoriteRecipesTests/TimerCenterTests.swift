@@ -123,3 +123,115 @@ struct CookingModelNameTests {
         #expect(CookingModel(recipe: recipe).recipeName == "Risotto")
     }
 }
+
+final class FakeActivities: TimerActivityManaging {
+    private(set) var started: [(id: UUID, title: String, endDate: Date)] = []
+    private(set) var updated: [(id: UUID, endDate: Date, isFinished: Bool)] = []
+    private(set) var ended: [UUID] = []
+
+    private(set) var orphanCleanups = 0
+
+    func endOrphans() async { orphanCleanups += 1 }
+    func start(id: UUID, title: String, endDate: Date) async { started.append((id, title, endDate)) }
+    func update(id: UUID, endDate: Date, isFinished: Bool) async { updated.append((id, endDate, isFinished)) }
+    func end(id: UUID) async { ended.append(id) }
+}
+
+@MainActor
+struct TimerLiveActivityTests {
+    private let start = Date(timeIntervalSinceReferenceDate: 100_000)
+
+    private func makeCenter(_ activities: FakeActivities, finishImmediately: Bool = false, clock: TestClock? = nil) -> TimerCenter {
+        let clock = clock ?? TestClock(start)
+        return TimerCenter(
+            notifier: FakeNotifier(),
+            activities: activities,
+            now: { clock.date },
+            wait: { _ in
+                if !finishImmediately { try? await Task.sleep(for: .seconds(3_600)) }
+            }
+        )
+    }
+
+    private func settle() async {
+        try? await Task.sleep(for: .milliseconds(100))
+    }
+
+    @Test func startingATimerStartsALiveActivity() async {
+        let activities = FakeActivities()
+        let center = makeCenter(activities)
+        let timer = center.start(seconds: 600, title: "Risotto · 10 min")
+        await settle()
+        #expect(activities.started.count == 1)
+        #expect(activities.started.first?.id == timer.id)
+        #expect(activities.started.first?.title == "Risotto · 10 min")
+        #expect(activities.started.first?.endDate == start.addingTimeInterval(600))
+        #expect(activities.updated.isEmpty)
+    }
+
+    @Test func addingAMinuteUpdatesTheActivityInsteadOfStartingAnother() async {
+        let activities = FakeActivities()
+        let center = makeCenter(activities)
+        let timer = center.start(seconds: 300, title: "x")
+        await settle()
+        center.addMinute(to: timer)
+        await settle()
+        #expect(activities.started.count == 1)
+        #expect(activities.updated.count == 1)
+        #expect(activities.updated.first?.endDate == start.addingTimeInterval(360))
+        #expect(activities.updated.first?.isFinished == false)
+    }
+
+    @Test func aFinishedTimerMarksTheActivityFinished() async {
+        let activities = FakeActivities()
+        let center = makeCenter(activities, finishImmediately: true)
+        let timer = center.start(seconds: 5, title: "x")
+        await settle()
+        #expect(center.isFinished(timer))
+        #expect(activities.updated.contains { $0.id == timer.id && $0.isFinished })
+    }
+
+    @Test func extendingAFinishedTimerRestartsTheCountdown() async {
+        let activities = FakeActivities()
+        let clock = TestClock(start)
+        let center = makeCenter(activities, finishImmediately: true, clock: clock)
+        let timer = center.start(seconds: 5, title: "x")
+        await settle()
+        clock.date = start.addingTimeInterval(10)
+        center.addMinute(to: timer)
+        await settle()
+        #expect(activities.started.count == 1)
+        #expect(activities.updated.contains { !$0.isFinished && $0.endDate == start.addingTimeInterval(70) })
+    }
+
+    @Test func stoppingATimerEndsItsActivity() async {
+        let activities = FakeActivities()
+        let center = makeCenter(activities)
+        let timer = center.start(seconds: 60, title: "x")
+        await settle()
+        center.remove(timer)
+        await settle()
+        #expect(activities.ended == [timer.id])
+    }
+
+    @Test func eachTimerGetsItsOwnActivity() async {
+        let activities = FakeActivities()
+        let center = makeCenter(activities)
+        let a = center.start(seconds: 60, title: "a")
+        let b = center.start(seconds: 120, title: "b")
+        await settle()
+        #expect(Set(activities.started.map(\.id)) == [a.id, b.id])
+        center.remove(a)
+        await settle()
+        #expect(activities.ended == [a.id])
+    }
+
+    @Test func leftoverActivitiesAreCleanedUpOnLaunch() async {
+        let activities = FakeActivities()
+        let center = makeCenter(activities)
+        center.cleanUpLeftoverActivities()
+        await settle()
+        #expect(activities.orphanCleanups == 1)
+        #expect(activities.started.isEmpty)
+    }
+}
