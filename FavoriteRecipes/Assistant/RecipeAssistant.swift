@@ -6,7 +6,7 @@ import FoundationModels
 enum RecipeAssistant {
 
     /// False on devices without Apple Intelligence, or while it is turned off or downloading.
-    static var isAvailable: Bool {
+    nonisolated static var isAvailable: Bool {
         SystemLanguageModel.default.isAvailable
     }
 

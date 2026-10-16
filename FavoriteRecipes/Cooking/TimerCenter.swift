@@ -19,13 +19,14 @@ final class TimerCenter {
     private var hasStartedActivity: Set<UUID> = []
 
     init(
-        notifier: any TimerNotifying = LocalTimerNotifier(),
-        activities: any TimerActivityManaging = NoTimerActivities.platformDefault,
+        notifier: (any TimerNotifying)? = nil,
+        activities: (any TimerActivityManaging)? = nil,
         now: @escaping () -> Date = { .now },
         wait: @escaping (Duration) async -> Void = { try? await Task.sleep(for: $0) }
     ) {
-        self.notifier = notifier
-        self.activities = activities
+        // The defaults are created here, because default argument values are not main actor isolated.
+        self.notifier = notifier ?? LocalTimerNotifier()
+        self.activities = activities ?? NoTimerActivities.platformDefault
         self.now = now
         self.wait = wait
     }

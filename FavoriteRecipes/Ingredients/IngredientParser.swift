@@ -41,7 +41,7 @@ enum IngredientParser {
 
     /// Parses every non-empty line of a text.
     static func parseLines(_ text: String?) -> [Ingredient] {
-        CookingParser.ingredients(from: text).map(parse)
+        CookingParser.ingredients(from: text).map { parse($0) }
     }
 
     // MARK: - Reading pieces
@@ -140,7 +140,7 @@ enum IngredientParser {
         let afterSpaces = text.drop { $0 == " " }
         let word = afterSpaces.prefix { $0.isLetter || $0 == "." }
         guard !word.isEmpty else { return (nil, nil, nil, afterSpaces) }
-        var rest = afterSpaces.dropFirst(word.count)
+        let rest = afterSpaces.dropFirst(word.count)
 
         // "fl oz" is two words.
         if word.lowercased() == "fl" {
